@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isValidId(id) {
+      return id is string && id.size() >= 4 && id.size() <= 40 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    match /test/{docId} {
+      allow read: if true;
+    }
+
+    match /preorders/{orderId} {
+      allow read, write: if true;
+    }
+
+    function isValidPreorder(data) {
+      return data.keys().hasAll(['orderId', 'timestamp', 'name', 'phone', 'email', 'size', 'color', 'location'])
+        && data.keys().size() == 8
+        && data.orderId is string
+        && data.timestamp is int
+        && data.name is string
+        && data.name.size() > 0 && data.name.size() <= 100
+        && data.phone is string
+        && data.phone.size() > 0 && data.phone.size() <= 50
+        && data.email is string
+        && data.email.size() > 0 && data.email.size() <= 100
+        && data.size is string
+        && data.size.size() > 0 && data.size.size() <= 10
+        && data.color is string
+        && data.color.size() > 0 && data.color.size() <= 50
+        && data.location is string
+        && data.location.size() > 0 && data.location.size() <= 500;
+    }
+  }
+}

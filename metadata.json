@@ -1,0 +1,8 @@
+{
+  "name": "Streetwear Catalog spreadsheet",
+  "description": "A premium professional streetwear fashion photoshoot catalog presenting high-fidelity editorial streetwear clothing connected directly to Google Spreadsheets for real-time order tracking and inventory management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

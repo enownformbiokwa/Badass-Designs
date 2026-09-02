@@ -1,0 +1,62 @@
+{
+  "entities": {
+    "Preorder": {
+      "title": "Preorder",
+      "description": "Preorder details for limited-edition release drop",
+      "type": "object",
+      "properties": {
+        "orderId": {
+          "type": "string",
+          "description": "Unique confirmation order ID"
+        },
+        "timestamp": {
+          "type": "number",
+          "description": "Creation timestamp in milliseconds"
+        },
+        "name": {
+          "type": "string",
+          "description": "Customer full name"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer WhatsApp or call phone number"
+        },
+        "email": {
+          "type": "string",
+          "description": "Customer email address"
+        },
+        "size": {
+          "type": "string",
+          "description": "Selected size"
+        },
+        "color": {
+          "type": "string",
+          "description": "Selected colorway"
+        },
+        "location": {
+          "type": "string",
+          "description": "Delivery location / shipping address"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "Number of items preordered"
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "Total checkout price in FCFA"
+        },
+        "depositAmount": {
+          "type": "number",
+          "description": "Deposit amount paid/due in FCFA"
+        }
+      },
+      "required": ["orderId", "timestamp", "name", "phone", "email", "size", "color", "location"]
+    }
+  },
+  "firestore": {
+    "preorders/{orderId}": {
+      "schema": { "$ref": "#/entities/Preorder" },
+      "description": "Preorder records"
+    }
+  }
+}
