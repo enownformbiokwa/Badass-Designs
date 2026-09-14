@@ -89,37 +89,50 @@ export function ReviewsSection({ pieceId, pieceName, initialReviews = [] }: Revi
 
   const avgRating = reviews.length > 0
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-    : "5.0";
+    : null;
 
   return (
     <div className="space-y-4 pt-2">
-      {/* Header with Average Rating */}
+      {/* Header with Average Rating or Fresh Drop Status */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 bg-neutral-900/60 border border-white/10 rounded-xl">
         <div className="flex items-center gap-3">
-          <div className="text-2xl font-black font-display text-white">
-            {avgRating}
-          </div>
-          <div>
-            <div className="flex items-center gap-1 text-white">
-              {[...Array(5)].map((_, i) => (
-                <Star
-                  key={i}
-                  size={13}
-                  className={i < Math.round(Number(avgRating)) ? "fill-white text-white" : "text-neutral-700"}
-                />
-              ))}
+          {avgRating ? (
+            <>
+              <div className="text-2xl font-black font-display text-white">
+                {avgRating}
+              </div>
+              <div>
+                <div className="flex items-center gap-1 text-white">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      size={13}
+                      className={i < Math.round(Number(avgRating)) ? "fill-white text-white" : "text-neutral-700"}
+                    />
+                  ))}
+                </div>
+                <span className="text-[10px] font-mono text-neutral-400">
+                  Based on {reviews.length} verified collector review{reviews.length === 1 ? "" : "s"}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div>
+              <span className="text-xs font-mono font-bold text-white uppercase tracking-wider block">
+                Collector Reviews
+              </span>
+              <span className="text-[10px] font-mono text-neutral-400">
+                Early preorders in production · Verified reviews submitted by collectors
+              </span>
             </div>
-            <span className="text-[10px] font-mono text-neutral-400">
-              Based on {reviews.length} verified review{reviews.length === 1 ? "" : "s"}
-            </span>
-          </div>
+          )}
         </div>
 
         <button
           onClick={() => setShowForm(!showForm)}
           className="px-3 py-1.5 rounded-lg bg-white text-black hover:bg-neutral-200 text-xs font-mono font-bold transition-colors cursor-pointer"
         >
-          {showForm ? "Cancel" : "Write a Review"}
+          {showForm ? "Cancel" : "Add Review"}
         </button>
       </div>
 

@@ -90,6 +90,7 @@ export interface LeadRecord {
   phone: string;
   source: string;
   referralCode?: string;
+  referredBy?: string;
 }
 
 interface ServerSheetsConfig {
@@ -133,7 +134,10 @@ function loadLeads(): LeadRecord[] {
   try {
     if (fs.existsSync(LEADS_FILE)) {
       const data = fs.readFileSync(LEADS_FILE, "utf-8");
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
     }
   } catch (err) {
     console.error("Error reading leads file:", err);
@@ -149,47 +153,33 @@ function saveLeads(leads: LeadRecord[]) {
   }
 }
 
+// Simple HTML & script tag sanitizer to prevent XSS / Injection
+function sanitizeInput(str: any, maxLength = 250): string {
+  if (typeof str !== "string") return "";
+  return str
+    .replace(/<[^>]*>?/gm, "") // strip HTML tags
+    .replace(/[^\w\s@.,+\-#/()':!]/gi, "") // remove potentially hazardous characters
+    .trim()
+    .slice(0, maxLength);
+}
+
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 function loadReviews(): ReviewRecord[] {
   try {
     if (fs.existsSync(REVIEWS_FILE)) {
       const data = fs.readFileSync(REVIEWS_FILE, "utf-8");
-      return JSON.parse(data);
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed)) {
+        return parsed;
+      }
     }
   } catch (err) {
     console.error("Error reading reviews file:", err);
   }
-  return [
-    {
-      reviewId: "rev-seed-1",
-      pieceId: "vegeta-stencil-tee",
-      pieceName: "Vegeta Stencil Tee v3",
-      name: "Karl M. (Buea)",
-      rating: 5,
-      comment: "The 240 GSM weight is unreal. It holds structure like high-end luxury Japanese streetwear. Definitely the best piece to come out of Buea.",
-      createdAt: "2026-08-10",
-      verified: true
-    },
-    {
-      reviewId: "rev-seed-2",
-      pieceId: "vegeta-stencil-tee",
-      pieceName: "Vegeta Stencil Tee v3",
-      name: "Sandra E. (Douala)",
-      rating: 5,
-      comment: "Fit is perfect oversized. The print quality is crisp and doesn't crack in the wash. Proud to represent Badass Designs!",
-      createdAt: "2026-08-14",
-      verified: true
-    },
-    {
-      reviewId: "rev-seed-3",
-      pieceId: "chalk-phantom-tee",
-      pieceName: "Chalk Phantom Graphic Tee",
-      name: "Brenda K. (Yaoundé)",
-      rating: 5,
-      comment: "The contrast between the white shirt and dark graphics is insane in sunlight.",
-      createdAt: "2026-08-12",
-      verified: true
-    }
-  ];
+  return [];
 }
 
 function saveReviews(reviews: ReviewRecord[]) {
@@ -257,8 +247,17 @@ app.post("/api/preorder", async (req, res) => {
   try {
     const { name, email, phone, location, product, quantity, size, color, totalAmount, depositAmount, balanceDue, referredBy } = req.body;
 
-    if (!name || !email || !phone || !location) {
+    const cleanName = sanitizeInput(name, 100);
+    const cleanEmail = sanitizeInput(email, 120);
+    const cleanPhone = sanitizeInput(phone, 35);
+    const cleanLocation = sanitizeInput(location, 150);
+
+    if (!cleanName || !cleanEmail || !cleanPhone || !cleanLocation) {
       return res.status(400).json({ error: "Missing required customer information." });
+    }
+
+    if (!isValidEmail(cleanEmail)) {
+      return res.status(400).json({ error: "Please provide a valid email address." });
     }
 
     const orderId = "BDS-" + Math.floor(100000 + Math.random() * 900000);
@@ -273,21 +272,21 @@ app.post("/api/preorder", async (req, res) => {
     const newOrder: PreorderRecord = {
       orderId,
       timestamp,
-      name: String(name).trim(),
-      email: String(email).trim(),
-      phone: String(phone).trim(),
-      location: String(location).trim(),
-      product: String(product || "Vegeta Stencil Tee v3 (Founder Drop)").trim(),
-      quantity: Number(quantity) || 1,
-      size: String(size || "XL").trim(),
-      color: String(color || "black/white").trim(),
-      totalAmount: Number(totalAmount) || 5000,
-      depositAmount: Number(depositAmount) || 3000,
-      balanceDue: Number(balanceDue) || 2000,
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
+      location: cleanLocation,
+      product: sanitizeInput(product || "Vegeta Stencil Tee v3 (Founder Drop)", 100),
+      quantity: Math.max(1, Math.min(20, Number(quantity) || 1)),
+      size: sanitizeInput(size || "XL", 10),
+      color: sanitizeInput(color || "black/white", 30),
+      totalAmount: Math.max(0, Number(totalAmount) || 4500),
+      depositAmount: Math.max(0, Number(depositAmount) || 3500),
+      balanceDue: Math.max(0, Number(balanceDue) || 1000),
       status: "CONFIRMED_PREORDER",
       founderNumber,
       referralCode,
-      referredBy: referredBy ? String(referredBy).trim() : undefined,
+      referredBy: referredBy ? sanitizeInput(referredBy, 50) : undefined,
     };
 
     orders.unshift(newOrder);
@@ -317,29 +316,60 @@ app.post("/api/preorder", async (req, res) => {
 // Public Lead Magnet / Drop List Signup ($100M Leads Framework)
 app.post("/api/lead-capture", async (req, res) => {
   try {
-    const { email, phone, name, source, referralCode } = req.body;
+    const { email, phone, name, source, referralCode, referredBy } = req.body;
 
-    if (!email && !phone) {
-      return res.status(400).json({ error: "Please provide either an email or phone number." });
+    const cleanName = sanitizeInput(name, 100);
+    const cleanEmail = sanitizeInput(email, 120);
+    const cleanPhone = sanitizeInput(phone, 35);
+    const cleanReferredBy = referredBy ? sanitizeInput(referredBy, 50) : undefined;
+
+    if (!cleanEmail && !cleanPhone && !cleanName) {
+      return res.status(400).json({ error: "Please provide your name, phone number, or email." });
+    }
+
+    if (cleanEmail && !isValidEmail(cleanEmail)) {
+      return res.status(400).json({ error: "Please provide a valid email format." });
     }
 
     const leadId = "LEAD-" + Math.floor(100000 + Math.random() * 900000);
     const timestamp = new Date().toISOString();
 
+    // Assign a unique referral code for this lead (using their phone or generated code)
+    const assignedReferralCode = referralCode 
+      ? sanitizeInput(referralCode, 30) 
+      : (cleanPhone ? cleanPhone : "REF-" + Math.floor(100000 + Math.random() * 900000));
+
     const newLead: LeadRecord = {
       leadId,
       timestamp,
-      name: name ? String(name).trim() : undefined,
-      email: email ? String(email).trim() : "",
-      phone: phone ? String(phone).trim() : "",
-      source: String(source || "Wallpaper Lead Magnet").trim(),
-      referralCode: referralCode ? String(referralCode).trim() : undefined,
+      name: cleanName || "Subscriber",
+      email: cleanEmail,
+      phone: cleanPhone,
+      source: sanitizeInput(source || "Website Access Gate", 80),
+      referralCode: assignedReferralCode,
+      referredBy: cleanReferredBy,
     };
 
     const leads = loadLeads();
-    // Avoid exact duplicate within same email
-    const exists = leads.find((l) => (email && l.email.toLowerCase() === email.toLowerCase()) || (phone && l.phone === phone));
-    if (!exists) {
+    const existingIndex = leads.findIndex((l) => 
+      (cleanEmail && l.email && l.email.toLowerCase() === cleanEmail.toLowerCase()) ||
+      (cleanPhone && l.phone && l.phone === cleanPhone) ||
+      (cleanName && l.name && l.name.toLowerCase() === cleanName.toLowerCase())
+    );
+
+    if (existingIndex !== -1) {
+      // Update existing lead with any new info
+      leads[existingIndex] = {
+        ...leads[existingIndex],
+        name: cleanName || leads[existingIndex].name,
+        phone: cleanPhone || leads[existingIndex].phone,
+        email: cleanEmail || leads[existingIndex].email,
+        source: leads[existingIndex].source || String(source || "Website Access Gate"),
+        referralCode: leads[existingIndex].referralCode || assignedReferralCode,
+        referredBy: leads[existingIndex].referredBy || cleanReferredBy,
+      };
+      saveLeads(leads);
+    } else {
       leads.unshift(newLead);
       saveLeads(leads);
 
@@ -354,14 +384,225 @@ app.post("/api/lead-capture", async (req, res) => {
       }
     }
 
+    const activeLead = existingIndex !== -1 ? leads[existingIndex] : newLead;
+
     return res.status(201).json({
       success: true,
+      leadId: activeLead.leadId,
+      referralCode: activeLead.referralCode || activeLead.phone || assignedReferralCode,
+      name: activeLead.name,
+      phone: activeLead.phone,
       message: "You are registered on the Founder Drop List! Download link unlocked.",
       wallpaperUrl: "https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=1600&auto=format&fit=crop",
     });
   } catch (err) {
     console.error("Lead capture error:", err);
     res.status(500).json({ error: "Failed to register lead." });
+  }
+});
+
+// Check if user is registered in the portal leads database
+app.post("/api/lead-check", (req, res) => {
+  try {
+    const { name, phone } = req.body || {};
+    const cleanName = (name ? String(name).trim().toLowerCase() : "");
+    const cleanPhone = (phone ? String(phone).replace(/\D/g, "") : "");
+
+    if (!cleanName && !cleanPhone) {
+      return res.json({ registered: false });
+    }
+
+    const leads = loadLeads();
+    const found = leads.find((l) => {
+      const lName = (l.name || "").trim().toLowerCase();
+      const lPhone = (l.phone || "").replace(/\D/g, "");
+
+      const nameMatches = Boolean(
+        cleanName && lName && (
+          lName === cleanName ||
+          lName.includes(cleanName) ||
+          cleanName.includes(lName)
+        )
+      );
+
+      const phoneMatches = Boolean(
+        cleanPhone && lPhone && (
+          lPhone === cleanPhone ||
+          lPhone.endsWith(cleanPhone) ||
+          cleanPhone.endsWith(lPhone)
+        )
+      );
+
+      return nameMatches || phoneMatches;
+    });
+
+    if (found) {
+      return res.json({
+        registered: true,
+        name: found.name,
+        phone: found.phone,
+        leadId: found.leadId,
+        referralCode: found.referralCode || found.phone,
+      });
+    }
+
+    return res.json({ registered: false });
+  } catch (err) {
+    console.error("Lead check error:", err);
+    res.json({ registered: false });
+  }
+});
+
+// User Referral Stats & Live Tracking Endpoint
+app.get("/api/my-referrals", (req, res) => {
+  try {
+    const rawId = String(req.query.identifier || "").trim();
+    if (!rawId) {
+      return res.status(400).json({ error: "Missing identifier" });
+    }
+
+    const cleanId = rawId.toLowerCase();
+    const cleanDigits = rawId.replace(/\D/g, "");
+
+    const leads = loadLeads();
+    const orders = loadOrders();
+
+    // Match leads referred by this user
+    const referredLeads = leads.filter((l) => {
+      if (!l.referredBy) return false;
+      const refBy = l.referredBy.toLowerCase().trim();
+      const refByDigits = l.referredBy.replace(/\D/g, "");
+      return (
+        refBy === cleanId ||
+        (cleanDigits.length >= 6 && refByDigits === cleanDigits) ||
+        (cleanDigits.length >= 6 && refByDigits.endsWith(cleanDigits))
+      );
+    });
+
+    // Match preorders referred by this user
+    const referredOrders = orders.filter((o) => {
+      if (!o.referredBy) return false;
+      const refBy = o.referredBy.toLowerCase().trim();
+      const refByDigits = o.referredBy.replace(/\D/g, "");
+      return (
+        refBy === cleanId ||
+        (cleanDigits.length >= 6 && refByDigits === cleanDigits) ||
+        (cleanDigits.length >= 6 && refByDigits.endsWith(cleanDigits))
+      );
+    });
+
+    // Build overall leaderboard of all promoters to determine ranking and Top 3
+    const promoterScoreMap: Record<string, { code: string; name: string; ordersCount: number; leadsCount: number; score: number }> = {};
+
+    leads.forEach((l) => {
+      if (l.referralCode) {
+        const c = l.referralCode.trim().toUpperCase();
+        if (!promoterScoreMap[c]) {
+          promoterScoreMap[c] = { code: c, name: l.name || "VIP Promoter", ordersCount: 0, leadsCount: 0, score: 0 };
+        }
+      }
+      if (l.referredBy) {
+        const c = l.referredBy.trim().toUpperCase();
+        if (!promoterScoreMap[c]) {
+          promoterScoreMap[c] = { code: c, name: "VIP Promoter", ordersCount: 0, leadsCount: 0, score: 0 };
+        }
+        promoterScoreMap[c].leadsCount += 1;
+      }
+    });
+
+    orders.forEach((o) => {
+      if (o.referralCode) {
+        const c = o.referralCode.trim().toUpperCase();
+        if (!promoterScoreMap[c]) {
+          promoterScoreMap[c] = { code: c, name: o.name || "Founder Collector", ordersCount: 0, leadsCount: 0, score: 0 };
+        }
+      }
+      if (o.referredBy) {
+        const c = o.referredBy.trim().toUpperCase();
+        if (!promoterScoreMap[c]) {
+          promoterScoreMap[c] = { code: c, name: "Promoter", ordersCount: 0, leadsCount: 0, score: 0 };
+        }
+        promoterScoreMap[c].ordersCount += 1;
+      }
+    });
+
+    // Calculate score: preorders count * 10 + signups
+    Object.values(promoterScoreMap).forEach((p) => {
+      p.score = p.ordersCount * 10 + p.leadsCount;
+    });
+
+    const sortedPromoters = Object.values(promoterScoreMap)
+      .filter((p) => p.score > 0)
+      .sort((a, b) => b.score - a.score);
+
+    // Find this user's rank
+    const userIndex = sortedPromoters.findIndex((p) => {
+      const pCode = p.code.toLowerCase();
+      const pDigits = p.code.replace(/\D/g, "");
+      return (
+        pCode === cleanId ||
+        (cleanDigits.length >= 6 && pDigits === cleanDigits)
+      );
+    });
+
+    const userRank = userIndex !== -1 ? userIndex + 1 : (sortedPromoters.length + 1);
+    const ordersCount = referredOrders.length;
+    const leadsCount = referredLeads.length;
+    const isTop3 = (userIndex !== -1 && userRank <= 3 && (ordersCount > 0 || leadsCount > 0));
+
+    let tier = isTop3 ? 1 : 0;
+    let tierReward = "";
+    let nextMilestone = "";
+
+    if (isTop3) {
+      tier = userRank;
+      tierReward = `QUALIFYING FOR FREE PIECE FROM DROP 002! Rank #${userRank} on Leaderboard`;
+      nextMilestone = "Keep sharing to lock in your position before Drop 001 closes to win your piece from Drop 002!";
+    } else if (ordersCount > 0 || leadsCount > 0) {
+      const cutoffScore = sortedPromoters[2]?.score || 1;
+      const myScore = ordersCount * 10 + leadsCount;
+      const pointsNeeded = Math.max(1, cutoffScore - myScore + 1);
+      tierReward = `Current Rank: #${userRank} (${ordersCount} preorders, ${leadsCount} signups)`;
+      nextMilestone = `Top 3 referrers win a 100% Free Piece from Drop 002! Need ~${Math.ceil(pointsNeeded / 10)} more preorders to enter Top 3.`;
+    } else {
+      tierReward = "Top 3 Referrers Win a 100% Free Piece from Drop 002";
+      nextMilestone = "Share your WhatsApp invite link. Top 3 promoters claim a free piece from Drop 002!";
+    }
+
+    const top3Leaderboard = sortedPromoters.slice(0, 3).map((p, idx) => ({
+      rank: idx + 1,
+      code: p.code,
+      name: p.name,
+      ordersCount: p.ordersCount,
+      leadsCount: p.leadsCount,
+      isWinner: true,
+    }));
+
+    return res.json({
+      identifier: rawId,
+      referralCode: rawId,
+      totalLeadsCount: referredLeads.length,
+      totalOrdersCount: ordersCount,
+      rank: (ordersCount > 0 || leadsCount > 0) ? userRank : null,
+      isTop3,
+      tierReward,
+      nextMilestone,
+      top3Leaderboard,
+      recentLeads: referredLeads.slice(0, 8).map((l) => ({
+        name: l.name || "VIP Guest",
+        timestamp: l.timestamp,
+        source: l.source,
+      })),
+      recentOrders: referredOrders.slice(0, 8).map((o) => ({
+        orderId: o.orderId,
+        product: o.product,
+        timestamp: o.timestamp,
+        depositAmount: o.depositAmount,
+      })),
+    });
+  } catch (err) {
+    console.error("My referrals error:", err);
+    res.status(500).json({ error: "Failed to fetch referral data" });
   }
 });
 
@@ -385,7 +626,13 @@ app.get("/api/reviews", (req, res) => {
 app.post("/api/reviews", (req, res) => {
   try {
     const { pieceId, pieceName, name, rating, comment } = req.body;
-    if (!pieceId || !name || !rating || !comment) {
+    
+    const cleanPieceId = sanitizeInput(pieceId, 60);
+    const cleanName = sanitizeInput(name, 80);
+    const cleanComment = sanitizeInput(comment, 600);
+    const cleanPieceName = pieceName ? sanitizeInput(pieceName, 100) : undefined;
+
+    if (!cleanPieceId || !cleanName || !rating || !cleanComment) {
       return res.status(400).json({ error: "Missing required review fields (pieceId, name, rating, comment)." });
     }
 
@@ -394,11 +641,11 @@ app.post("/api/reviews", (req, res) => {
 
     const newReview: ReviewRecord = {
       reviewId,
-      pieceId: String(pieceId).trim(),
-      pieceName: pieceName ? String(pieceName).trim() : undefined,
-      name: String(name).trim(),
+      pieceId: cleanPieceId,
+      pieceName: cleanPieceName,
+      name: cleanName,
       rating: Math.max(1, Math.min(5, Number(rating) || 5)),
-      comment: String(comment).trim(),
+      comment: cleanComment,
       createdAt,
       verified: true,
     };
@@ -655,7 +902,7 @@ app.get("/api/admin/export-csv", checkAdminAuth, (req, res) => {
       let reward = "Needs 1 invite for Tier 1";
       if (r.referredCount >= 3) {
         tier = "Tier 3 (Grand Prize)";
-        reward = "100% Free Drop 002 T-Shirt";
+        reward = "100% Free Drop 001 T-Shirt";
       } else if (r.referredCount === 2) {
         tier = "Tier 2";
         reward = "Limited Badass Founder Snapback / Cap";

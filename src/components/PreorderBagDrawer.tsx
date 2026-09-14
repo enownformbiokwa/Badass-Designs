@@ -7,7 +7,8 @@ import {
   Minus, 
   Trash2, 
   ArrowRight, 
-  ShieldCheck
+  ShieldCheck,
+  Package
 } from "lucide-react";
 import { BagItem } from "../types";
 
@@ -166,6 +167,17 @@ export function PreorderBagDrawer({
                     <span>Balance upon Delivery:</span>
                     <span>{balanceDue.toLocaleString()} XAF</span>
                   </div>
+                </div>
+
+                {/* Packaging Suite Badge */}
+                <div className="p-2.5 bg-neutral-950/80 border border-white/10 rounded-xl space-y-1 text-[11px] font-mono">
+                  <div className="flex items-center gap-1.5 text-white font-bold uppercase tracking-wider text-[10px]">
+                    <Package size={12} className="text-amber-400 shrink-0" />
+                    <span>Drop 001 Packaging Included:</span>
+                  </div>
+                  <p className="text-neutral-400 text-[10px] leading-snug">
+                    Custom nylon bag + Vegeta hang tag + collector stickers + Thank You card.
+                  </p>
                 </div>
 
                 <button

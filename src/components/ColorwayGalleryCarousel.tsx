@@ -123,14 +123,14 @@ export function ColorwayGalleryCarousel({
   };
 
   if (subtle) {
-    // Subtle variant for the Preorder page: streamlined layout, extra spacious, rounded-[36px]
+    // Subtle variant for the Preorder page: streamlined layout, extra spacious
     return (
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 16 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-neutral-950 border border-white/15 rounded-[36px] p-6 sm:p-9 md:p-10 space-y-8 shadow-2xl backdrop-blur-sm"
+        className="bg-neutral-950 border border-white/15 rounded-2xl p-6 sm:p-8 md:p-10 space-y-8 shadow-2xl backdrop-blur-sm"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-white/10 pb-5">
@@ -148,11 +148,11 @@ export function ColorwayGalleryCarousel({
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-12 gap-8 lg:gap-10 items-center">
-          {/* Main Visual Frame with extreme border-radius */}
+          {/* Main Visual Frame */}
           <div 
             onMouseEnter={() => setIsHovered(true)} 
             onMouseLeave={() => setIsHovered(false)}
-            className="sm:col-span-6 relative aspect-[4/5] bg-neutral-900 rounded-[28px] overflow-hidden border border-white/15 group flex items-center justify-center shadow-lg"
+            className="sm:col-span-6 relative aspect-[4/5] bg-neutral-900 rounded-xl overflow-hidden border border-white/15 group flex items-center justify-center shadow-lg"
           >
             <AnimatePresence mode="wait">
               <motion.img
@@ -198,11 +198,11 @@ export function ColorwayGalleryCarousel({
             </div>
           </div>
 
-          {/* Color selector, Size & Angle Switcher with slide right & bounce back animation */}
+          {/* Color selector, Size & Angle Switcher */}
           <motion.div 
-            initial={{ x: 60, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", bounce: 0.4, duration: 0.6 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
             className="sm:col-span-6 space-y-6"
           >
             {/* Color Swatch Grid */}
@@ -223,9 +223,9 @@ export function ColorwayGalleryCarousel({
                       key={c.name}
                       type="button"
                       onClick={() => handleColorChange(c.name)}
-                      className={`p-3.5 rounded-[18px] border transition-all cursor-pointer flex items-center gap-2.5 text-left ${
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center gap-2.5 text-left ${
                         isSelected
-                          ? "bg-white text-black border-white font-bold shadow-lg scale-[1.02]"
+                          ? "bg-white text-black border-white font-bold shadow-lg"
                           : "bg-neutral-900/90 text-neutral-300 border-white/10 hover:border-white/30"
                       }`}
                     >
@@ -307,7 +307,7 @@ export function ColorwayGalleryCarousel({
                     key={idx}
                     type="button"
                     onClick={() => setActivePoseIdx(idx)}
-                    className={`relative aspect-[4/3] rounded-[16px] overflow-hidden border transition-all cursor-pointer ${
+                    className={`relative aspect-[4/3] rounded-lg overflow-hidden border transition-all cursor-pointer ${
                       activePoseIdx === idx
                         ? "border-white ring-2 ring-white/50 opacity-100 shadow-md"
                         : "border-white/10 opacity-60 hover:opacity-90"
@@ -369,7 +369,7 @@ export function ColorwayGalleryCarousel({
             <img
               src={currentPhoto}
               alt={selectedColor}
-              className="max-w-full max-h-[90vh] object-contain rounded-[28px]"
+              className="max-w-full max-h-[90vh] object-contain rounded-xl"
               referrerPolicy="no-referrer"
             />
             <button
@@ -388,11 +388,11 @@ export function ColorwayGalleryCarousel({
   // Standard interactive presentation on the main Home page with generous spacing & rich typography
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 24 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-neutral-950 border border-white/15 rounded-[36px] p-6 sm:p-10 md:p-12 space-y-10 sm:space-y-12 shadow-2xl relative overflow-hidden"
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-neutral-950 border border-white/15 rounded-2xl p-6 sm:p-8 md:p-10 space-y-8 shadow-2xl relative overflow-hidden"
     >
       {/* Background Soft Glow */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-white/[0.02] rounded-full blur-3xl pointer-events-none -mr-32 -mt-32" />
@@ -417,7 +417,7 @@ export function ColorwayGalleryCarousel({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start relative z-10">
         {/* Left / Center: Interactive Picture Carousel (7 cols) */}
         <div className="lg:col-span-7 space-y-4">
-          <div className="relative aspect-[4/5] bg-neutral-900 rounded-[30px] overflow-hidden border border-white/15 group flex items-center justify-center shadow-2xl">
+          <div className="relative aspect-[4/5] bg-neutral-900 rounded-xl overflow-hidden border border-white/15 group flex items-center justify-center shadow-2xl">
             <AnimatePresence mode="wait">
               <motion.img
                 key={`${selectedColor}-${activePoseIdx}`}
@@ -480,7 +480,7 @@ export function ColorwayGalleryCarousel({
                 key={idx}
                 type="button"
                 onClick={() => setActivePoseIdx(idx)}
-                className={`relative aspect-[4/3] rounded-[20px] overflow-hidden border transition-all cursor-pointer ${
+                className={`relative aspect-[4/3] rounded-lg overflow-hidden border transition-all cursor-pointer ${
                   activePoseIdx === idx
                     ? "border-white ring-2 ring-white/60 shadow-lg opacity-100 scale-[1.02]"
                     : "border-white/10 opacity-60 hover:opacity-100"
@@ -532,9 +532,9 @@ export function ColorwayGalleryCarousel({
                     key={c.name}
                     type="button"
                     onClick={() => handleColorChange(c.name)}
-                    className={`p-3.5 sm:p-4 rounded-[20px] border transition-all cursor-pointer flex items-center gap-3 text-left ${
+                    className={`p-3.5 sm:p-4 rounded-xl border transition-all cursor-pointer flex items-center gap-3 text-left ${
                       isSelected
-                        ? "bg-white text-black border-white font-bold shadow-xl scale-[1.02]"
+                        ? "bg-white text-black border-white font-bold shadow-xl"
                         : "bg-neutral-900/80 text-neutral-300 border-white/10 hover:border-white/30"
                     }`}
                   >
@@ -562,9 +562,9 @@ export function ColorwayGalleryCarousel({
                   key={sz}
                   type="button"
                   onClick={() => handleSizeChange(sz)}
-                  className={`flex-1 py-3 rounded-2xl font-mono text-xs sm:text-sm transition-all cursor-pointer text-center ${
+                  className={`flex-1 py-3 rounded-xl font-mono text-xs sm:text-sm transition-all cursor-pointer text-center ${
                     selectedSize === sz
-                      ? "bg-white text-black font-bold border border-white shadow-md scale-105"
+                      ? "bg-white text-black font-bold border border-white shadow-md"
                       : "bg-neutral-900 text-neutral-300 border border-white/10 hover:border-white/30"
                   }`}
                 >
@@ -575,7 +575,7 @@ export function ColorwayGalleryCarousel({
           </div>
 
           {/* Pricing & Deposit Banner */}
-          <div className="p-5 bg-neutral-900/90 border border-white/15 rounded-[24px] flex items-center justify-between font-mono text-xs shadow-md">
+          <div className="p-5 bg-neutral-900/90 border border-white/15 rounded-xl flex items-center justify-between font-mono text-xs shadow-md">
             <div>
               <span className="text-neutral-400 block text-[10px] uppercase tracking-wider">October Drop Price</span>
               <span className="font-display font-black text-2xl sm:text-3xl text-white">4,500 XAF</span>
@@ -591,7 +591,7 @@ export function ColorwayGalleryCarousel({
             <button
               type="button"
               onClick={handleAdd}
-              className={`flex-1 py-4 px-5 rounded-[20px] text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-md ${
+              className={`flex-1 py-4 px-5 rounded-xl text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 transition-all cursor-pointer shadow-md ${
                 addedAnimation
                   ? "bg-neutral-200 text-black"
                   : "bg-neutral-900 hover:bg-neutral-800 border border-white/20 text-white"
@@ -613,7 +613,7 @@ export function ColorwayGalleryCarousel({
             <button
               type="button"
               onClick={() => onPreorder(activePiece, selectedSize, selectedColor, selectedQty)}
-              className="flex-1 py-4 px-5 bg-white text-black hover:bg-neutral-200 rounded-[20px] font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xl scale-[1.01] hover:scale-[1.02]"
+              className="flex-1 py-4 px-5 bg-white text-black hover:bg-neutral-200 rounded-xl font-display font-black text-xs uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer shadow-xl"
             >
               <Flame size={16} />
               <span>Preorder {selectedColor}</span>
@@ -622,69 +622,22 @@ export function ColorwayGalleryCarousel({
         </div>
       </div>
 
-      {/* Technical Tee Details Section with Generous Spacing */}
-      <div className="mt-10 sm:mt-14 pt-8 sm:pt-10 border-t border-white/10 bg-neutral-900/50 rounded-[32px] p-6 sm:p-8 md:p-10 space-y-7 shadow-inner relative z-10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-5">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-white/10 border border-white/15 flex items-center justify-center">
-              <Sparkles size={16} className="text-white" />
-            </div>
-            <div>
-              <h4 className="font-display font-bold text-base sm:text-lg text-white uppercase tracking-wider">
-                Technical Tee Specifications & GSM
-              </h4>
-              <p className="text-xs text-neutral-400 font-mono">
-                Architectural drape and heavy cotton standards.
-              </p>
-            </div>
-          </div>
-          <span className="text-[11px] font-mono uppercase bg-white/10 text-neutral-200 px-3.5 py-1.5 rounded-full border border-white/10 w-fit">
-            Luxury Streetwear Standard
+      {/* Sleek Specification Micro-Tags - Clean & Uncongested */}
+      <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 text-xs font-mono relative z-10">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="px-3.5 py-1.5 rounded-full bg-neutral-900/90 border border-white/15 text-neutral-200 text-[11px] tracking-wider uppercase font-semibold shadow-sm">
+            240 GSM Combed Cotton
+          </span>
+          <span className="px-3.5 py-1.5 rounded-full bg-neutral-900/90 border border-white/15 text-neutral-200 text-[11px] tracking-wider uppercase font-semibold shadow-sm">
+            High-Density DTF
+          </span>
+          <span className="px-3.5 py-1.5 rounded-full bg-neutral-900/90 border border-white/15 text-neutral-200 text-[11px] tracking-wider uppercase font-semibold shadow-sm">
+            1" Reinforced Rib
           </span>
         </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 sm:gap-6 text-xs font-mono">
-          {/* Box 1: Fabric & Weight */}
-          <div className="p-5 sm:p-6 bg-black/75 rounded-[24px] border border-white/10 hover:border-white/25 transition-all space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Fabric & Weight</div>
-              <div className="text-white font-black text-base sm:text-lg font-display uppercase">240 GSM Heavy Cotton</div>
-              <p className="text-xs text-neutral-300 font-mono leading-relaxed pt-1">
-                100% compact combed ring-spun cotton with ultra-dense zero-transparency drape.
-              </p>
-            </div>
-          </div>
-
-          {/* Box 2: Print Technology */}
-          <div className="p-5 sm:p-6 bg-black/75 rounded-[24px] border border-white/10 hover:border-white/25 transition-all space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Print Durability</div>
-              <div className="text-white font-black text-base sm:text-lg font-display uppercase">HD DTF Matrix</div>
-              <p className="text-xs text-neutral-300 font-mono leading-relaxed pt-1">
-                Wash-proof high-definition pigment fusion. Tested for 40+ wash cycles without cracking.
-              </p>
-            </div>
-          </div>
-
-          {/* Box 3: Collar & Stitching */}
-          <div className="p-5 sm:p-6 bg-black/75 rounded-[24px] border border-white/10 hover:border-white/25 transition-all space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold">Collar & Seams</div>
-              <div className="text-white font-black text-base sm:text-lg font-display uppercase">1" Ribbed Crewneck</div>
-              <p className="text-xs text-neutral-300 font-mono leading-relaxed pt-1">
-                Reinforced neckband that retains its fitted structure and never sags over time.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Care Instructions bar */}
-        <div className="text-xs sm:text-sm font-mono text-neutral-300 flex items-start gap-3.5 p-4 sm:p-5 rounded-[22px] bg-black/50 border border-white/10">
-          <Info size={18} className="shrink-0 text-white mt-0.5" />
-          <span className="leading-relaxed">
-            <strong className="text-white">Care Specs:</strong> Machine wash cold inside-out (30°C) with like colors. Hang dry in shade to preserve cotton tension. Do not iron directly over the anime graphic print.
-          </span>
-        </div>
+        <span className="text-neutral-400 text-[11px] tracking-widest uppercase font-mono">
+          Buea, Cameroon · Limited Batch
+        </span>
       </div>
 
       {/* Fullscreen Zoom Modal */}
@@ -696,7 +649,7 @@ export function ColorwayGalleryCarousel({
           <img
             src={currentPhoto}
             alt={selectedColor}
-            className="max-w-full max-h-[90vh] object-contain rounded-[32px]"
+            className="max-w-full max-h-[90vh] object-contain rounded-xl"
             referrerPolicy="no-referrer"
           />
           <button

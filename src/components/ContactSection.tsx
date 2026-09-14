@@ -1,10 +1,17 @@
 import React from "react";
-import { MessageCircle, Instagram, Globe, Sparkles, ArrowUpRight } from "lucide-react";
+import { MessageCircle, Instagram, Globe, Sparkles, ArrowUpRight, Users } from "lucide-react";
 import { BRAND_MANIFESTO } from "../data/pieces";
 import { motion } from "motion/react";
 
 export function ContactSection() {
   const CONTACT_LINKS = [
+    {
+      title: "Community",
+      subtitle: "VIP WhatsApp Group",
+      handle: "Join Group",
+      url: BRAND_MANIFESTO.whatsappCommunityUrl,
+      icon: <Users size={22} />,
+    },
     {
       title: "WhatsApp",
       subtitle: "Official Concierge",
@@ -43,38 +50,37 @@ export function ContactSection() {
         </p>
       </div>
 
-      {/* Circular Contact Cards with Drop down & bounce up animation */}
-      <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-8 pt-2">
+      {/* Structured Editorial Contact Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2 max-w-4xl mx-auto">
         {CONTACT_LINKS.map((item, idx) => (
           <motion.a
             key={item.title}
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ y: -40, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ type: "spring", bounce: 0.4, delay: idx * 0.1 }}
-            className="w-40 h-40 sm:w-44 sm:h-44 rounded-full bg-neutral-950 border border-white/15 hover:border-white/50 flex flex-col items-center justify-center p-4 text-center group hover:scale-105 transition-all shadow-xl relative overflow-hidden"
+            initial={{ opacity: 0, y: 12 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: idx * 0.06 }}
+            className="p-5 rounded-2xl bg-neutral-950 border border-white/10 hover:border-white/30 flex flex-col items-start justify-between text-left group transition-all shadow-lg relative"
           >
-            {/* Subtle inner hover glow */}
-            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-full pointer-events-none" />
-
-            {/* Icon Circle */}
-            <div className="w-11 h-11 rounded-full bg-neutral-900 border border-white/15 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors mb-2">
-              {item.icon}
+            <div className="flex items-center justify-between w-full mb-4">
+              <div className="w-10 h-10 rounded-xl bg-neutral-900 border border-white/10 flex items-center justify-center text-white group-hover:bg-white group-hover:text-black transition-colors">
+                {item.icon}
+              </div>
+              <ArrowUpRight size={16} className="text-neutral-500 group-hover:text-white transition-colors" />
             </div>
 
-            <span className="font-display font-black text-white text-sm uppercase tracking-wide">
-              {item.title}
-            </span>
-
-            <span className="text-[10px] font-mono text-neutral-400 truncate max-w-[120px] mt-0.5">
-              {item.handle}
-            </span>
-
-            <div className="inline-flex items-center gap-0.5 text-[10px] font-mono text-white/70 group-hover:text-white mt-1.5">
-              <span>Open</span>
-              <ArrowUpRight size={11} />
+            <div>
+              <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block">
+                {item.subtitle}
+              </span>
+              <span className="font-display font-black text-white text-base uppercase tracking-tight block mt-0.5">
+                {item.title}
+              </span>
+              <span className="text-xs font-mono text-neutral-300 mt-1 block truncate">
+                {item.handle}
+              </span>
             </div>
           </motion.a>
         ))}

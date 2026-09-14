@@ -41,11 +41,11 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
 
       {/* Centralized Brand Narrative & Standards */}
       <motion.section 
-        initial={{ opacity: 0, y: 28 }}
+        initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-40px" }}
-        transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-neutral-950 border border-white/15 rounded-[40px] p-8 sm:p-12 md:p-16 space-y-16 relative overflow-hidden shadow-2xl"
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="bg-neutral-950 border border-white/15 rounded-2xl p-8 sm:p-12 md:p-14 space-y-14 relative overflow-hidden shadow-2xl"
       >
         {/* The Philosophy - Centralized */}
         <div className="text-center space-y-4 max-w-2xl mx-auto">
@@ -67,9 +67,9 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
-            className="p-6 sm:p-7 bg-neutral-900/80 rounded-[26px] border border-white/10 hover:border-white/25 transition-all text-center space-y-3 shadow-lg"
+            className="p-6 sm:p-7 bg-neutral-900/80 rounded-xl border border-white/10 hover:border-white/25 transition-all text-center space-y-3 shadow-lg"
           >
-            <div className="w-10 h-10 mx-auto rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
+            <div className="w-10 h-10 mx-auto rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
               <Layers size={18} />
             </div>
             <span className="text-[10px] uppercase text-neutral-400 font-bold tracking-widest block">01 · Weight</span>
@@ -84,9 +84,9 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.2 }}
-            className="p-6 sm:p-7 bg-neutral-900/80 rounded-[26px] border border-white/10 hover:border-white/25 transition-all text-center space-y-3 shadow-lg"
+            className="p-6 sm:p-7 bg-neutral-900/80 rounded-xl border border-white/10 hover:border-white/25 transition-all text-center space-y-3 shadow-lg"
           >
-            <div className="w-10 h-10 mx-auto rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
+            <div className="w-10 h-10 mx-auto rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
               <Sparkles size={18} />
             </div>
             <span className="text-[10px] uppercase text-neutral-400 font-bold tracking-widest block">02 · Matrix</span>
@@ -101,9 +101,9 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.3 }}
-            className="p-6 sm:p-7 bg-neutral-900/80 rounded-[26px] border border-white/10 hover:border-white/25 transition-all text-center space-y-3 shadow-lg"
+            className="p-6 sm:p-7 bg-neutral-900/80 rounded-xl border border-white/10 hover:border-white/25 transition-all text-center space-y-3 shadow-lg"
           >
-            <div className="w-10 h-10 mx-auto rounded-2xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
+            <div className="w-10 h-10 mx-auto rounded-xl bg-white/10 border border-white/15 flex items-center justify-center text-white">
               <ShieldCheck size={18} />
             </div>
             <span className="text-[10px] uppercase text-neutral-400 font-bold tracking-widest block">03 · Scarcity</span>
@@ -115,8 +115,8 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
         </div>
 
         {/* The Phased Drop System - Centralized */}
-        <div className="border-t border-white/10 pt-14 space-y-10">
-          <div className="text-center space-y-3 max-w-xl mx-auto">
+        <div className="border-t border-white/10 pt-12 space-y-8">
+          <div className="text-center space-y-2 max-w-xl mx-auto">
             <span className="text-xs font-mono text-neutral-400 uppercase tracking-widest block">
               Fulfillment
             </span>
@@ -125,15 +125,15 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs font-mono">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs font-mono">
             <motion.div 
               initial={{ opacity: 0, y: 14 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4 }}
-              className="p-6 bg-neutral-900/90 rounded-[24px] border border-white/10 text-center space-y-2.5 shadow-md"
+              className="p-5 sm:p-6 bg-neutral-900/90 rounded-xl border border-white/10 text-center space-y-2.5 shadow-md"
             >
-              <div className="w-8 h-8 mx-auto rounded-full bg-black border border-white/20 flex items-center justify-center font-bold text-white text-xs">
+              <div className="w-8 h-8 mx-auto rounded-lg bg-black border border-white/20 flex items-center justify-center font-bold text-white text-xs">
                 1
               </div>
               <h4 className="font-display font-bold text-white text-sm uppercase">Lock Deposit</h4>
@@ -147,9 +147,9 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="p-6 bg-neutral-900/90 rounded-[24px] border border-white/10 text-center space-y-2.5 shadow-md"
+              className="p-5 sm:p-6 bg-neutral-900/90 rounded-xl border border-white/10 text-center space-y-2.5 shadow-md"
             >
-              <div className="w-8 h-8 mx-auto rounded-full bg-black border border-white/20 flex items-center justify-center font-bold text-white text-xs">
+              <div className="w-8 h-8 mx-auto rounded-lg bg-black border border-white/20 flex items-center justify-center font-bold text-white text-xs">
                 2
               </div>
               <h4 className="font-display font-bold text-white text-sm uppercase">Batch Craft</h4>
@@ -163,9 +163,9 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="p-6 bg-neutral-900/90 rounded-[24px] border border-white/10 text-center space-y-2.5 shadow-md"
+              className="p-5 sm:p-6 bg-neutral-900/90 rounded-xl border border-white/10 text-center space-y-2.5 shadow-md"
             >
-              <div className="w-8 h-8 mx-auto rounded-full bg-black border border-white/20 flex items-center justify-center font-bold text-white text-xs">
+              <div className="w-8 h-8 mx-auto rounded-lg bg-black border border-white/20 flex items-center justify-center font-bold text-white text-xs">
                 3
               </div>
               <h4 className="font-display font-bold text-white text-sm uppercase">Handover</h4>
@@ -177,7 +177,7 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
         </div>
 
         {/* Centralized Location & Action Footnote */}
-        <div className="border-t border-white/10 pt-12 text-center space-y-6">
+        <div className="border-t border-white/10 pt-10 text-center space-y-6">
           <div className="space-y-2">
             <div className="inline-flex items-center gap-2 text-white font-mono text-xs uppercase font-bold tracking-wider">
               <MapPin size={16} />
@@ -191,7 +191,7 @@ export function AboutView({ onPreorderClick }: AboutViewProps) {
           <div className="pt-2 flex justify-center">
             <button
               onClick={onPreorderClick}
-              className="py-4 px-8 rounded-full bg-white text-black hover:bg-neutral-200 font-display font-black text-xs uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shadow-xl hover:scale-105"
+              className="py-3.5 px-7 rounded-xl bg-white text-black hover:bg-neutral-200 font-display font-black text-xs uppercase tracking-wider flex items-center gap-2.5 transition-all cursor-pointer shadow-xl hover:scale-105"
             >
               <span>Explore October Drop</span>
               <ArrowRight size={15} />

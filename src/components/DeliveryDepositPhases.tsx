@@ -64,7 +64,7 @@ export function DeliveryDepositPhases({ onPreorderClick, compact = false }: Deli
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: "-30px" }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="bg-neutral-950 border border-white/10 rounded-[32px] p-6 sm:p-7 space-y-5 shadow-xl"
+        className="bg-neutral-950 border border-white/10 rounded-2xl p-6 sm:p-7 space-y-5 shadow-xl"
       >
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/10 pb-4">
           <div>
@@ -88,7 +88,7 @@ export function DeliveryDepositPhases({ onPreorderClick, compact = false }: Deli
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.4, delay: idx * 0.1 }}
-              className="p-4 bg-neutral-900/90 rounded-[20px] border border-white/10 space-y-3 flex flex-col justify-between"
+              className="p-4 bg-neutral-900/90 rounded-xl border border-white/10 space-y-3 flex flex-col justify-between"
             >
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs font-mono text-neutral-400">
@@ -132,7 +132,7 @@ export function DeliveryDepositPhases({ onPreorderClick, compact = false }: Deli
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="bg-neutral-950 border border-white/15 rounded-[36px] p-6 sm:p-9 md:p-10 space-y-8 shadow-2xl relative overflow-hidden"
+      className="bg-neutral-950 border border-white/15 rounded-2xl p-6 sm:p-8 space-y-8 shadow-2xl relative overflow-hidden"
     >
       {/* Header without the button */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
@@ -148,7 +148,7 @@ export function DeliveryDepositPhases({ onPreorderClick, compact = false }: Deli
           </p>
         </div>
 
-        <div className="font-mono text-left md:text-right bg-neutral-900/80 border border-white/10 p-3.5 rounded-2xl w-fit md:w-auto">
+        <div className="font-mono text-left md:text-right bg-neutral-900/80 border border-white/10 p-3.5 rounded-xl w-fit md:w-auto">
           <span className="text-[10px] text-neutral-400 uppercase block tracking-wider font-bold">Drop Total</span>
           <span className="font-display font-black text-2xl text-white">4,500 XAF</span>
         </div>
@@ -163,48 +163,42 @@ export function DeliveryDepositPhases({ onPreorderClick, compact = false }: Deli
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: idx * 0.12 }}
-            className="p-6 rounded-[26px] bg-neutral-900/90 border border-white/10 hover:border-white/30 transition-all flex flex-col justify-between space-y-4 shadow-lg"
+            className="p-6 rounded-xl bg-neutral-900/80 border border-white/10 hover:border-white/25 transition-all flex flex-col justify-between space-y-4 shadow-lg backdrop-blur-md"
           >
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <span className="w-7 h-7 rounded-xl bg-black border border-white/20 flex items-center justify-center font-mono font-bold text-xs text-white shadow">
+                <span className="w-8 h-8 rounded-lg bg-black border border-white/20 flex items-center justify-center font-mono font-bold text-xs text-white shadow">
                   {phase.num}
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 bg-black/50 px-2.5 py-1 rounded-full border border-white/5">
+                <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400 bg-white/5 px-2.5 py-1 rounded-full border border-white/5">
                   {phase.label}
                 </span>
               </div>
 
               <div>
-                <h4 className="font-display font-bold text-base text-white uppercase">
+                <h4 className="font-display font-bold text-sm uppercase tracking-wider text-neutral-300">
                   {phase.title}
                 </h4>
-                <div className="font-display font-black text-xl text-white mt-1">
+                <div className="font-display font-black text-2xl sm:text-3xl text-white mt-1 tracking-tight">
                   {phase.amount}
                 </div>
               </div>
 
-              <p className="text-xs text-neutral-300 font-mono leading-relaxed">
+              <p className="text-xs text-neutral-400 font-mono leading-relaxed pt-1">
                 {phase.desc}
               </p>
             </div>
 
-            <div className="pt-3 border-t border-white/10 space-y-1.5">
-              <ul className="space-y-1.5 text-xs font-mono text-neutral-300">
-                {phase.points.map((item, i) => (
-                  <li key={i} className="flex items-start gap-2">
-                    <CheckCircle2 size={13} className="text-white shrink-0 mt-0.5" />
-                    <span className="leading-tight">{item}</span>
-                  </li>
-                ))}
-              </ul>
+            <div className="pt-3 border-t border-white/5 flex items-center gap-2 text-[11px] font-mono text-neutral-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-white shrink-0" />
+              <span className="truncate">{phase.points[0]}</span>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Pickup & Courier footer bar */}
-      <div className="p-5 bg-black/80 rounded-[24px] border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs">
+      <div className="p-5 bg-black/80 rounded-xl border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider">
             <MapPin size={15} className="text-white shrink-0" />

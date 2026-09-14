@@ -88,6 +88,7 @@ export interface LeadRecord {
   phone: string;
   source: string;
   referralCode?: string;
+  referredBy?: string;
 }
 
 export interface ServerSheetsConfig {

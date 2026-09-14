@@ -13,10 +13,14 @@ import {
   ChevronDown,
   ChevronUp,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Package,
+  Tag,
+  Sparkles,
+  Heart
 } from "lucide-react";
 import { Piece } from "../types";
-import { COLOR_POSE_GALLERIES } from "../data/pieces";
+import { COLOR_POSE_GALLERIES, DROP_001_PACKAGING } from "../data/pieces";
 import { ReviewsSection } from "./ReviewsSection";
 
 interface PieceDetailModalProps {
@@ -38,7 +42,7 @@ export function PieceDetailModal({
   const [selectedSize, setSelectedSize] = useState<string>("L");
   const [currentPoseIdx, setCurrentPoseIdx] = useState<number>(0);
   const [quantity, setQuantity] = useState<number>(1);
-  const [openAccordion, setOpenAccordion] = useState<"story" | "fabric" | "delivery" | "reviews" | null>("story");
+  const [openAccordion, setOpenAccordion] = useState<"story" | "fabric" | "packaging" | "delivery" | "reviews" | null>("story");
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -102,7 +106,7 @@ export function PieceDetailModal({
     window.open(waUrl, "_blank");
   };
 
-  const toggleAccordion = (key: "story" | "fabric" | "delivery" | "reviews") => {
+  const toggleAccordion = (key: "story" | "fabric" | "packaging" | "delivery" | "reviews") => {
     setOpenAccordion((prev) => (prev === key ? null : key));
   };
 
@@ -317,10 +321,10 @@ export function PieceDetailModal({
                 {/* Quantity & Preorder CTA */}
                 <div className="space-y-2.5 pt-2">
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center border border-white/15 rounded-2xl bg-neutral-900 p-1">
+                    <div className="flex items-center border border-white/15 rounded-xl bg-neutral-900 p-1">
                       <button
                         onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                        className="w-8 h-8 rounded-xl text-neutral-400 hover:text-white flex items-center justify-center cursor-pointer"
+                        className="w-8 h-8 rounded-lg text-neutral-400 hover:text-white flex items-center justify-center cursor-pointer"
                       >
                         <Minus size={14} />
                       </button>
@@ -329,7 +333,7 @@ export function PieceDetailModal({
                       </span>
                       <button
                         onClick={() => setQuantity(quantity + 1)}
-                        className="w-8 h-8 rounded-xl text-neutral-400 hover:text-white flex items-center justify-center cursor-pointer"
+                        className="w-8 h-8 rounded-lg text-neutral-400 hover:text-white flex items-center justify-center cursor-pointer"
                       >
                         <Plus size={14} />
                       </button>
@@ -337,7 +341,7 @@ export function PieceDetailModal({
 
                     <button
                       onClick={handleAdd}
-                      className={`flex-1 py-3 px-4 rounded-2xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
+                      className={`flex-1 py-3 px-4 rounded-xl text-xs font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all cursor-pointer ${
                         addedAnimation
                           ? "bg-neutral-200 text-black"
                           : "bg-white hover:bg-neutral-200 text-black"
@@ -362,7 +366,7 @@ export function PieceDetailModal({
                       onClose();
                       onDirectPreorder(piece, selectedSize, selectedColor, quantity);
                     }}
-                    className="w-full py-3 bg-neutral-900 hover:bg-neutral-800 border border-white/20 text-white rounded-2xl text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="w-full py-3 bg-neutral-900 hover:bg-neutral-800 border border-white/20 text-white rounded-xl text-xs font-mono font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <span>Direct 1-Click Preorder ({selectedColor})</span>
                     <ArrowRight size={13} />
@@ -376,7 +380,7 @@ export function PieceDetailModal({
                   </div>
 
                   {/* Accordion 1: The Story */}
-                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-neutral-900/40">
+                  <div className="border border-white/10 rounded-xl overflow-hidden bg-neutral-900/40">
                     <button
                       onClick={() => toggleAccordion("story")}
                       className="w-full p-3.5 flex items-center justify-between text-left text-xs font-mono text-white hover:bg-white/5 cursor-pointer"
@@ -392,7 +396,7 @@ export function PieceDetailModal({
                   </div>
 
                   {/* Accordion 2: The Fabric & Care */}
-                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-neutral-900/40">
+                  <div className="border border-white/10 rounded-xl overflow-hidden bg-neutral-900/40">
                     <button
                       onClick={() => toggleAccordion("fabric")}
                       className="w-full p-3.5 flex items-center justify-between text-left text-xs font-mono text-white hover:bg-white/5 cursor-pointer"
@@ -403,11 +407,11 @@ export function PieceDetailModal({
                     {openAccordion === "fabric" && (
                       <div className="p-3.5 pt-0 text-xs font-mono text-neutral-300 leading-relaxed border-t border-white/5 space-y-2">
                         <div className="grid grid-cols-2 gap-2 text-[11px] pt-2">
-                          <div className="p-2 bg-neutral-900 rounded-xl border border-white/5">
+                          <div className="p-2 bg-neutral-900 rounded-lg border border-white/5">
                             <span className="text-neutral-500 block">Composition</span>
                             <span className="text-white font-bold">{piece.fabric.composition}</span>
                           </div>
-                          <div className="p-2 bg-neutral-900 rounded-xl border border-white/5">
+                          <div className="p-2 bg-neutral-900 rounded-lg border border-white/5">
                             <span className="text-neutral-500 block">Weight</span>
                             <span className="text-white font-bold">{piece.fabric.weight}</span>
                           </div>
@@ -423,8 +427,48 @@ export function PieceDetailModal({
                     )}
                   </div>
 
-                  {/* Accordion 3: Delivery Timeline */}
-                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-neutral-900/40">
+                  {/* Accordion 3: Packaging & Unboxing Suite */}
+                  <div className="border border-white/10 rounded-xl overflow-hidden bg-neutral-900/40">
+                    <button
+                      onClick={() => toggleAccordion("packaging")}
+                      className="w-full p-3.5 flex items-center justify-between text-left text-xs font-mono text-white hover:bg-white/5 cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
+                        <Package size={14} className="text-white" />
+                        <span>Packaging & Unboxing Experience</span>
+                      </div>
+                      {openAccordion === "packaging" ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                    </button>
+                    {openAccordion === "packaging" && (
+                      <div className="p-3.5 pt-0 text-xs font-mono text-neutral-300 leading-relaxed border-t border-white/5 space-y-2.5 pt-2">
+                        <p className="text-[11px] text-neutral-400">
+                          Every Drop 001 order is fulfilled in premium custom packaging designed to elevate the piece:
+                        </p>
+                        <div className="space-y-2">
+                          {DROP_001_PACKAGING.map((item, idx) => (
+                            <div key={idx} className="p-2.5 rounded-lg bg-neutral-950 border border-white/10 space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-white text-[11px] flex items-center gap-1.5">
+                                  {idx === 0 && <Package size={12} className="text-white" />}
+                                  {idx === 1 && <Tag size={12} className="text-white" />}
+                                  {idx === 2 && <Sparkles size={12} className="text-white" />}
+                                  {idx === 3 && <Heart size={12} className="text-white" />}
+                                  {item.name}
+                                </span>
+                                <span className="text-[9px] font-mono text-neutral-300 bg-white/10 px-1.5 py-0.5 rounded">
+                                  {item.badge}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-neutral-400">{item.description}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Accordion 4: Delivery Timeline */}
+                  <div className="border border-white/10 rounded-xl overflow-hidden bg-neutral-900/40">
                     <button
                       onClick={() => toggleAccordion("delivery")}
                       className="w-full p-3.5 flex items-center justify-between text-left text-xs font-mono text-white hover:bg-white/5 cursor-pointer"
@@ -450,7 +494,7 @@ export function PieceDetailModal({
                   </div>
 
                   {/* Accordion 4: Customer Reviews */}
-                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-neutral-900/40">
+                  <div className="border border-white/10 rounded-xl overflow-hidden bg-neutral-900/40">
                     <button
                       onClick={() => toggleAccordion("reviews")}
                       className="w-full p-3.5 flex items-center justify-between text-left text-xs font-mono text-white hover:bg-white/5 cursor-pointer"

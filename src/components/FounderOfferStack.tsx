@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Check, Shield, Gift, Crown, Layers, Download, Award, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, Shield, Gift, Crown, Layers, Award, Package, Tag, Sparkles, Heart } from "lucide-react";
+import { DROP_001_PACKAGING } from "../data/pieces";
 
 interface FounderOfferStackProps {
   onPreorderClick: () => void;
@@ -8,7 +9,7 @@ interface FounderOfferStackProps {
 }
 
 export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
-  const [activeTab, setActiveTab] = useState<"stack" | "guarantee">("stack");
+  const [activeTab, setActiveTab] = useState<"stack" | "packaging" | "guarantee">("stack");
 
   const stackItems = [
     {
@@ -19,11 +20,32 @@ export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
       badge: "PHYSICAL PIECE"
     },
     {
-      title: "Matte-Black Founder Packaging Box",
-      desc: "Custom heavy-duty unboxing box sealed with brand holographic tape.",
-      value: "3,500 FCFA",
-      icon: <Gift size={16} className="text-white" />,
-      badge: "COLLECTOR PACK"
+      title: "Custom Branded Nylon Bag Packaging",
+      desc: "Heavy-duty custom nylon garment bag with sealed closure to protect your piece in transit and storage.",
+      value: "3,000 FCFA",
+      icon: <Package size={16} className="text-white" />,
+      badge: "CUSTOM NYLON"
+    },
+    {
+      title: "Vegeta-Themed Collector Hang Tag",
+      desc: "Card carrying brand information, Dragon Ball Z lore, drop specifications, and care instructions.",
+      value: "2,000 FCFA",
+      icon: <Tag size={16} className="text-white" />,
+      badge: "VEGETA THEMED"
+    },
+    {
+      title: "Badass & Vegeta Collector Stickers",
+      desc: "Weatherproof die-cut vinyl stickers featuring Badass insignia and Vegeta stencil art.",
+      value: "1,500 FCFA",
+      icon: <Sparkles size={16} className="text-white" />,
+      badge: "STICKER PACK"
+    },
+    {
+      title: "Founder Thank You Card",
+      desc: "Personal signed card from the founder team commemorating Gen-1 Drop 001 early support.",
+      value: "2,000 FCFA",
+      icon: <Heart size={16} className="text-white" />,
+      badge: "THANK YOU CARD"
     },
     {
       title: "Numbered Metal-Finish Founder Card",
@@ -31,13 +53,6 @@ export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
       value: "5,000 FCFA",
       icon: <Crown size={16} className="text-white" />,
       badge: "LIMITED 50 PIECES"
-    },
-    {
-      title: "Certificate of Authenticity",
-      desc: "Official Certificate signed by the design team. Never restocked.",
-      value: "2,500 FCFA",
-      icon: <Award size={16} className="text-white" />,
-      badge: "AUTHENTICITY"
     },
     {
       title: "Lifetime Priority Access to Drop 002",
@@ -68,7 +83,7 @@ export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
           </h3>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <button
             onClick={() => setActiveTab("stack")}
             className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
@@ -78,6 +93,16 @@ export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
             }`}
           >
             Included Perks
+          </button>
+          <button
+            onClick={() => setActiveTab("packaging")}
+            className={`px-3 py-1 rounded-lg text-xs font-mono transition-colors cursor-pointer ${
+              activeTab === "packaging"
+                ? "bg-white text-black font-bold"
+                : "bg-neutral-900 text-neutral-400 hover:text-white"
+            }`}
+          >
+            Packaging Suite
           </button>
           <button
             onClick={() => setActiveTab("guarantee")}
@@ -92,7 +117,7 @@ export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
         </div>
       </div>
 
-      {activeTab === "stack" ? (
+      {activeTab === "stack" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
           {stackItems.map((item, idx) => (
             <div
@@ -118,7 +143,61 @@ export function FounderOfferStack({ onPreorderClick }: FounderOfferStackProps) {
             </div>
           ))}
         </div>
-      ) : (
+      )}
+
+      {activeTab === "packaging" && (
+        <div className="space-y-4">
+          <div className="p-4 bg-neutral-900/60 border border-white/10 rounded-xl">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-300 font-bold block mb-1">
+              Drop 001 Unboxing Experience
+            </span>
+            <p className="text-xs font-mono text-neutral-300 leading-relaxed">
+              Every Drop 001 order is packaged in our custom nylon bag with full anime collector collateral — never a plain delivery.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            {DROP_001_PACKAGING.map((item, idx) => (
+              <div
+                key={idx}
+                className="p-4 bg-neutral-900/80 border border-white/15 rounded-xl space-y-2 hover:border-white/30 transition-all"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-neutral-800 border border-white/10 flex items-center justify-center text-white">
+                      {idx === 0 && <Package size={14} />}
+                      {idx === 1 && <Tag size={14} />}
+                      {idx === 2 && <Sparkles size={14} />}
+                      {idx === 3 && <Heart size={14} />}
+                    </div>
+                    <span className="font-display font-bold text-xs uppercase text-white">
+                      {item.name}
+                    </span>
+                  </div>
+                  <span className="text-[9px] font-mono text-neutral-300 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                    {item.badge}
+                  </span>
+                </div>
+
+                <div className="text-[10px] font-mono text-neutral-400">
+                  {item.tagline}
+                </div>
+
+                <p className="text-xs font-mono text-neutral-300 leading-relaxed">
+                  {item.description}
+                </p>
+
+                <div className="pt-2 border-t border-white/5 text-[10px] font-mono text-neutral-300 flex items-center gap-1.5">
+                  <Check size={12} className="text-white" />
+                  <span>{item.highlight}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === "guarantee" && (
         <div className="p-5 bg-neutral-900/40 border border-white/10 rounded-xl space-y-3">
           <div className="flex items-center gap-2 text-white font-display font-bold text-sm uppercase">
             <Shield size={18} />

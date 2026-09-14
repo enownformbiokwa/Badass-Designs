@@ -38,47 +38,47 @@ export function DropCountdown({ targetDate = "2026-10-31T23:59:59" }: DropCountd
   }, [targetDate]);
 
   return (
-    <div className="bg-neutral-950 border border-white/15 rounded-3xl p-5 sm:p-6 text-center max-w-2xl mx-auto shadow-2xl space-y-4">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-xs font-mono uppercase tracking-widest">
+    <div className="bg-neutral-950/90 border border-white/15 rounded-2xl p-6 sm:p-7 text-center max-w-xl mx-auto shadow-2xl space-y-6 backdrop-blur-xl">
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-[11px] sm:text-xs font-mono uppercase tracking-[0.2em]">
         <Clock size={13} className="text-white animate-pulse" />
         <span>OCTOBER DROP · RESERVATION WINDOW CLOSES IN</span>
       </div>
 
-      <div className="grid grid-cols-4 gap-2 sm:gap-4 max-w-md mx-auto">
+      <div className="grid grid-cols-4 gap-2.5 sm:gap-4 max-w-md mx-auto">
         {/* Days */}
-        <div className="bg-neutral-900 border border-white/10 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center">
-          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight">
+        <div className="bg-neutral-900/90 border border-white/10 rounded-xl py-3 sm:py-3.5 px-2 flex flex-col items-center justify-center shadow-inner">
+          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight tabular-nums">
             {String(timeLeft.days).padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1">Days</span>
+          <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest mt-1">Days</span>
         </div>
 
         {/* Hours */}
-        <div className="bg-neutral-900 border border-white/10 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center">
-          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight">
+        <div className="bg-neutral-900/90 border border-white/10 rounded-xl py-3 sm:py-3.5 px-2 flex flex-col items-center justify-center shadow-inner">
+          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight tabular-nums">
             {String(timeLeft.hours).padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1">Hours</span>
+          <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest mt-1">Hours</span>
         </div>
 
         {/* Minutes */}
-        <div className="bg-neutral-900 border border-white/10 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center">
-          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight">
+        <div className="bg-neutral-900/90 border border-white/10 rounded-xl py-3 sm:py-3.5 px-2 flex flex-col items-center justify-center shadow-inner">
+          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight tabular-nums">
             {String(timeLeft.minutes).padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1">Mins</span>
+          <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest mt-1">Mins</span>
         </div>
 
         {/* Seconds */}
-        <div className="bg-neutral-900 border border-white/10 rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center">
-          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight">
+        <div className="bg-neutral-900/90 border border-white/10 rounded-xl py-3 sm:py-3.5 px-2 flex flex-col items-center justify-center shadow-inner">
+          <span className="font-display font-black text-2xl sm:text-4xl text-white tracking-tight tabular-nums">
             {String(timeLeft.seconds).padStart(2, "0")}
           </span>
-          <span className="text-[10px] font-mono text-neutral-400 uppercase mt-1">Secs</span>
+          <span className="text-[10px] font-mono text-neutral-400 uppercase tracking-widest mt-1">Secs</span>
         </div>
       </div>
 
-      <p className="text-[11px] font-mono text-neutral-400">
+      <p className="text-[11px] sm:text-xs font-mono text-neutral-400 leading-relaxed max-w-md mx-auto pt-1">
         Strict limit: Only 50 pieces manufactured per batch · 3,500 XAF deposit required to lock serial number.
       </p>
     </div>

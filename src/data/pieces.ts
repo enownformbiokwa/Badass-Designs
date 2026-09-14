@@ -68,40 +68,14 @@ export const PIECES_DATA: Piece[] = [
     featured: true,
     dropDeadline: "October 31, 2026",
     dropPrivileges: [
-      "Drop-exclusive matte-black founder packaging",
-      "Badass Gift Draw raffle ticket entry",
+      "Custom branded nylon bag packaging with sealed closure",
+      "Vegeta-themed Hang Tag (brand info & drop lore)",
+      "Exclusive Badass & Vegeta-themed collector stickers",
+      "Founder Thank You Card & Gift Draw entry",
       "Serialized metallic collectible Founder Card",
       "Lifetime 24-hour priority access to Drop 002"
     ],
-    reviews: [
-      {
-        reviewId: "rev-101",
-        pieceId: "vegeta-stencil-tee-bw",
-        name: "Karl M.",
-        rating: 5,
-        comment: "The 240 GSM weight is unreal. It holds structure like high-end luxury streetwear. Best piece to come out of Buea.",
-        createdAt: "2026-08-10",
-        verified: true,
-      },
-      {
-        reviewId: "rev-102",
-        pieceId: "vegeta-stencil-tee-bw",
-        name: "Sandra E.",
-        rating: 5,
-        comment: "Fit is perfect boxy silhouette. The print quality is crisp and doesn't crack in the wash. 10/10 quality.",
-        createdAt: "2026-08-14",
-        verified: true,
-      },
-      {
-        reviewId: "rev-103",
-        pieceId: "vegeta-stencil-tee-bw",
-        name: "Junior T.",
-        rating: 5,
-        comment: "Preordered on Drop day, received the limited collectible card. Top tier vibe.",
-        createdAt: "2026-08-18",
-        verified: true,
-      }
-    ]
+    reviews: []
   },
   {
     id: "vegeta-stencil-tee-bb",
@@ -146,21 +120,13 @@ export const PIECES_DATA: Piece[] = [
     featured: true,
     dropDeadline: "October 31, 2026",
     dropPrivileges: [
-      "Drop-exclusive matte-black packaging",
-      "Gift Draw Entry",
-      "Founder Collectible Card"
+      "Custom branded nylon bag packaging with sealed closure",
+      "Vegeta-themed Hang Tag (brand info & drop lore)",
+      "Exclusive Badass & Vegeta-themed collector stickers",
+      "Founder Thank You Card & Gift Draw entry",
+      "Serialized metallic collectible Founder Card"
     ],
-    reviews: [
-      {
-        reviewId: "rev-201",
-        pieceId: "vegeta-stencil-tee-bb",
-        name: "Brenda K.",
-        rating: 5,
-        comment: "The electric blue graphics on the dark cotton look even better in person.",
-        createdAt: "2026-08-12",
-        verified: true,
-      }
-    ]
+    reviews: []
   },
   {
     id: "vegeta-stencil-tee-bg",
@@ -205,20 +171,13 @@ export const PIECES_DATA: Piece[] = [
     featured: true,
     dropDeadline: "October 31, 2026",
     dropPrivileges: [
-      "Drop-exclusive matte-black founder packaging",
-      "Collectible Card & Draw eligibility"
+      "Custom branded nylon bag packaging with sealed closure",
+      "Vegeta-themed Hang Tag (brand info & drop lore)",
+      "Exclusive Badass & Vegeta-themed collector stickers",
+      "Founder Thank You Card & Gift Draw entry",
+      "Serialized metallic collectible Founder Card"
     ],
-    reviews: [
-      {
-        reviewId: "rev-301",
-        pieceId: "vegeta-stencil-tee-bg",
-        name: "Boris N.",
-        rating: 5,
-        comment: "The gold stencil print on heavy black cotton is luxury tier. 100% worth it.",
-        createdAt: "2026-08-16",
-        verified: true,
-      }
-    ]
+    reviews: []
   },
   {
     id: "vegeta-stencil-tee-bp",
@@ -263,12 +222,49 @@ export const PIECES_DATA: Piece[] = [
     featured: true,
     dropDeadline: "October 31, 2026",
     dropPrivileges: [
-      "Drop Packaging",
-      "Collectible Card",
-      "Draw Entry"
+      "Custom branded nylon bag packaging with sealed closure",
+      "Vegeta-themed Hang Tag (brand info & drop lore)",
+      "Exclusive Badass & Vegeta-themed collector stickers",
+      "Founder Thank You Card & Gift Draw entry",
+      "Serialized metallic collectible Founder Card"
     ],
     reviews: []
   }
+];
+
+export const DROP_001_PACKAGING = [
+  {
+    id: "nylon-bag",
+    name: "Custom Branded Nylon Bag",
+    tagline: "Protective Heavy-Duty Shell",
+    description: "Custom heavy-duty branded nylon garment bag with sealed closure, designed to protect your 240 GSM piece during delivery and storage.",
+    badge: "CUSTOM NYLON",
+    highlight: "Water-resistant matte nylon with industrial brand seal",
+  },
+  {
+    id: "hang-tag",
+    name: "Vegeta-Themed Hang Tag",
+    tagline: "Brand Information & Drop Lore",
+    description: "Collector card tag carrying Badass Designs brand philosophy, Drop 001 Vegeta stencil inspiration, anime lore, and fabric care instructions.",
+    badge: "VEGETA THEMED",
+    highlight: "High-density card with Vegeta stencil graphic & brand manifesto",
+  },
+  {
+    id: "stickers",
+    name: "Badass & Vegeta Collector Stickers",
+    tagline: "Exclusive Die-Cut Decals",
+    description: "Weatherproof vinyl stickers featuring the Badass Designs insignia and Drop 001 Vegeta stencil artwork for laptops, phones, and gear.",
+    badge: "STICKER PACK",
+    highlight: "Die-cut waterproof vinyl collector decals",
+  },
+  {
+    id: "thank-you-card",
+    name: "Founder Thank You Card",
+    tagline: "Gen-1 Believer Recognition",
+    description: "Personal card from the founder team expressing gratitude for championing Badass Designs from the very first drop in Buea.",
+    badge: "THANK YOU CARD",
+    highlight: "Signed founder card commemorating Gen-1 Drop 001 membership",
+  },
 ];
 
 export const BRAND_MANIFESTO = {
@@ -283,6 +279,7 @@ export const BRAND_MANIFESTO = {
   ],
   whatsapp: "+237 679798568",
   whatsappUrl: "https://wa.me/237679798568?text=Hello%20Badass%20Designs!%20I'm%20interested%20in%20the%20October%20Drop%20pieces.",
+  whatsappCommunityUrl: "https://chat.whatsapp.com/D9cylrMF05SKAONofCRPij",
   instagram: "@badass_designs.cm",
   instagramUrl: "https://instagram.com/badass_designs.cm",
   tiktok: "@badass_designs.cm",

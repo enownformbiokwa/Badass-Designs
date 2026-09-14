@@ -3,7 +3,8 @@ import {
   Home, 
   ShoppingBag, 
   Flame,
-  Info
+  Info,
+  Gift
 } from "lucide-react";
 
 export type NavTab = "home" | "preorder" | "about";
@@ -14,6 +15,7 @@ interface NavigationProps {
   bagCount: number;
   onOpenBag: () => void;
   onOpenOwnerPortal: () => void;
+  onOpenReferralModal?: () => void;
 }
 
 export function Navigation({
@@ -22,6 +24,7 @@ export function Navigation({
   bagCount,
   onOpenBag,
   onOpenOwnerPortal,
+  onOpenReferralModal,
 }: NavigationProps) {
   return (
     <>
@@ -73,6 +76,19 @@ export function Navigation({
             <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           </button>
 
+          {/* VIP REFERRALS */}
+          {onOpenReferralModal && (
+            <button
+              onClick={onOpenReferralModal}
+              className="w-13 h-13 rounded-xl flex flex-col items-center justify-center gap-0.5 text-neutral-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer group relative"
+              title="VIP Referral & Rewards"
+            >
+              <Gift size={18} />
+              <span className="text-[8px] font-mono uppercase tracking-wider text-neutral-300 group-hover:text-white font-bold">Rewards</span>
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            </button>
+          )}
+
           {/* ABOUT BRAND */}
           <button
             onClick={() => onSelectTab("about")}
@@ -108,7 +124,7 @@ export function Navigation({
 
       {/* Mobile Bottom Floating Dock */}
       <nav className="lg:hidden fixed bottom-3 left-4 right-4 z-40">
-        <div className="bg-black/95 backdrop-blur-xl border border-white/20 px-4 py-2.5 rounded-2xl shadow-2xl shadow-black flex items-center justify-around">
+        <div className="bg-black/95 backdrop-blur-xl border border-white/20 px-3 py-2 rounded-2xl shadow-2xl shadow-black flex items-center justify-around">
           <button
             onClick={() => onSelectTab("home")}
             className={`flex flex-col items-center gap-1 p-1 rounded-lg cursor-pointer ${
@@ -129,6 +145,17 @@ export function Navigation({
             <span className="text-[9px] font-mono uppercase">Preorder</span>
             <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
           </button>
+
+          {onOpenReferralModal && (
+            <button
+              onClick={onOpenReferralModal}
+              className="flex flex-col items-center gap-1 p-1 rounded-lg text-neutral-300 hover:text-white cursor-pointer relative"
+            >
+              <Gift size={18} />
+              <span className="text-[9px] font-mono uppercase font-bold text-neutral-300">Rewards</span>
+              <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+            </button>
+          )}
 
           <button
             onClick={() => onSelectTab("about")}

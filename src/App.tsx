@@ -19,7 +19,10 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
-  Sparkles
+  Sparkles,
+  Gift,
+  Trophy,
+  MessageCircle
 } from "lucide-react";
 
 import { 
@@ -47,6 +50,7 @@ import { AboutView } from "./components/AboutView";
 import { PrivacyPolicyModal } from "./components/PrivacyPolicyModal";
 import { TermsModal } from "./components/TermsModal";
 import { CookieBanner } from "./components/CookieBanner";
+import { ReferralModal } from "./components/ReferralModal";
 
 const POPULAR_LOCATIONS = [
   "UB Junction (Direct Pickup), Buea, Cameroon",
@@ -94,6 +98,7 @@ export function App() {
   const [isOwnerPortalOpen, setIsOwnerPortalOpen] = useState(false);
   const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
   const [isTermsOpen, setIsTermsOpen] = useState(false);
+  const [isReferralModalOpen, setIsReferralModalOpen] = useState(false);
 
   // Preorder form state
   const [customerName, setCustomerName] = useState("");
@@ -116,9 +121,19 @@ export function App() {
     setActiveDropdown((prev) => (prev === key ? null : key));
   };
 
-  // Check access gate on mount (always show cinematic preloader on load)
+  // Check access gate on mount and inspect ?ref= referral param
   useEffect(() => {
     try {
+      // Capture referral parameter from URL (e.g. ?ref=FOUNDER-XXXX or ?ref=679798568)
+      if (typeof window !== "undefined" && window.location.search) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const refParam = urlParams.get("ref");
+        if (refParam) {
+          const cleanRef = refParam.trim().toUpperCase();
+          localStorage.setItem("badass_referred_by", cleanRef);
+        }
+      }
+
       const storedName = localStorage.getItem("badass_user_name") || "";
       const storedPhone = localStorage.getItem("badass_user_phone") || "";
 
@@ -239,6 +254,8 @@ export function App() {
     setOrderError("");
 
     try {
+      const storedReferredBy = typeof window !== "undefined" ? localStorage.getItem("badass_referred_by") : null;
+
       const payload = {
         name: customerName.trim(),
         email: customerEmail.trim() || `${customerName.toLowerCase().replace(/\s+/g, '')}@badass.client`,
@@ -252,6 +269,7 @@ export function App() {
         totalAmount: activeTotalAmount,
         depositAmount: activeDepositAmount,
         balanceDue: activeBalanceDue,
+        referredBy: storedReferredBy || undefined,
       };
 
       const res = await fetch("/api/preorder", {
@@ -263,6 +281,11 @@ export function App() {
       const result = await res.json();
       if (!res.ok) {
         throw new Error(result.error || "Failed to process preorder. Please try again.");
+      }
+
+      // Save user referral code for quick access in ReferralModal
+      if (result.order?.referralCode) {
+        localStorage.setItem("badass_user_referral_code", result.order.referralCode);
       }
 
       setConfirmedOrder(result.order);
@@ -309,6 +332,7 @@ export function App() {
         bagCount={bag.reduce((sum, item) => sum + item.quantity, 0)}
         onOpenBag={() => setIsBagOpen(true)}
         onOpenOwnerPortal={() => setIsOwnerPortalOpen(true)}
+        onOpenReferralModal={() => setIsReferralModalOpen(true)}
       />
 
       {/* Slide-in Preorder Bag Drawer */}
@@ -408,34 +432,34 @@ export function App() {
         {/* TAB 1: HOME (Calm, Minimal, October Drop Showcase + Collapsible Specs)    */}
         {/* ========================================================================= */}
         {currentTab === "home" && (
-          <div className="space-y-14 sm:space-y-20">
+          <div className="space-y-20 sm:space-y-28 md:space-y-36">
             
             {/* Hero Section: October Drop Headline */}
             <motion.section 
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center space-y-5 max-w-3xl mx-auto pt-4 sm:pt-8"
+              className="text-center space-y-6 sm:space-y-8 max-w-3xl mx-auto pt-6 sm:pt-12"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-neutral-300 text-xs font-mono uppercase tracking-widest shadow-sm">
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/5 border border-white/15 text-neutral-300 text-[11px] sm:text-xs font-mono uppercase tracking-[0.2em] shadow-sm backdrop-blur-md">
                 <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
                 <span>OCTOBER DROP · 240 GSM HEAVYWEIGHT</span>
               </div>
 
-              <h1 className="font-display font-black text-3xl sm:text-5xl md:text-6xl tracking-tight text-white uppercase leading-tight">
+              <h1 className="font-display font-black text-4xl sm:text-6xl md:text-7xl tracking-tight text-white uppercase leading-[1.05] drop-shadow-lg">
                 For Those Who Know.
               </h1>
 
-              <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-mono leading-relaxed max-w-xl mx-auto">
+              <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-mono leading-relaxed max-w-xl mx-auto px-4">
                 Exclusive limited-batch anime streetwear tees engineered in Buea, Cameroon. 100% compact combed cotton with high-density DTF graphics.
               </p>
 
-              {/* Countdown on Home Page with slide up, down, up animation */}
+              {/* Countdown on Home Page with smooth breathing room */}
               <motion.div 
-                initial={{ y: 20 }}
-                animate={{ y: [20, -10, 10, 0] }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className="pt-2"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, ease: "easeOut" }}
+                className="pt-4"
               >
                 <DropCountdown targetDate="2026-10-31T23:59:59" />
               </motion.div>
@@ -451,10 +475,10 @@ export function App() {
 
             {/* The October Drop Collection Grid (All 4 October Tees) */}
             <motion.section 
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="space-y-6"
             >
               <div className="flex items-end justify-between border-b border-white/10 pb-4">
@@ -475,13 +499,13 @@ export function App() {
                 {PIECES_DATA.map((piece, idx) => (
                   <motion.div
                     key={piece.id}
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 16 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    transition={{ duration: 0.4, delay: idx * 0.08 }}
-                    whileHover={{ y: -6, scale: 1.01 }}
+                    transition={{ duration: 0.35, delay: idx * 0.06 }}
+                    whileHover={{ y: -4 }}
                     onClick={() => setSelectedPieceForDetail(piece)}
-                    className="bg-neutral-950 border border-white/10 hover:border-white/40 rounded-[24px] overflow-hidden flex flex-col group cursor-pointer transition-all shadow-xl"
+                    className="bg-neutral-950 border border-white/10 hover:border-white/40 rounded-xl overflow-hidden flex flex-col group cursor-pointer transition-all shadow-xl"
                   >
                     {/* Tee Image */}
                     <div className="aspect-[4/5] bg-neutral-900 overflow-hidden relative">
@@ -538,10 +562,10 @@ export function App() {
             {/* DROPDOWN ACCORDIONS (Less on-screen info, clean dropdowns for specs) */}
             {/* ===================================================================== */}
             <motion.section 
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               className="space-y-4 pt-6 border-t border-white/10"
             >
               <div className="text-center max-w-lg mx-auto space-y-1.5 mb-6">
@@ -553,13 +577,13 @@ export function App() {
                 </h3>
               </div>
 
-               {/* Accordion 1: The Drop System (Slide Right) */}
+               {/* Accordion 1: The Drop System */}
               <motion.div 
-                initial={{ x: 50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="border border-white/10 rounded-[24px] overflow-hidden bg-neutral-950 shadow-md"
+                transition={{ duration: 0.35 }}
+                className="border border-white/10 rounded-xl overflow-hidden bg-neutral-950 shadow-md"
               >
                 <button
                   onClick={() => toggleDropdown("system")}
@@ -578,13 +602,13 @@ export function App() {
                 )}
               </motion.div>
 
-              {/* Accordion 2: 240 GSM Fabric Philosophy (Slide Left) */}
+              {/* Accordion 2: 240 GSM Fabric Philosophy */}
               <motion.div 
-                initial={{ x: -50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="border border-white/10 rounded-[24px] overflow-hidden bg-neutral-950 shadow-md"
+                transition={{ duration: 0.35 }}
+                className="border border-white/10 rounded-xl overflow-hidden bg-neutral-950 shadow-md"
               >
                 <button
                   onClick={() => toggleDropdown("fabric")}
@@ -599,17 +623,17 @@ export function App() {
                 {activeDropdown === "fabric" && (
                   <div className="p-5 sm:p-7 border-t border-white/10 text-xs sm:text-sm font-mono text-neutral-300 space-y-4 leading-relaxed">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      <div className="p-4 bg-neutral-900 rounded-[18px] border border-white/10 space-y-1.5">
+                      <div className="p-4 bg-neutral-900 rounded-xl border border-white/10 space-y-1.5">
                         <span className="text-neutral-400 block text-[10px] uppercase font-bold tracking-wider">Weight Standard</span>
                         <strong className="text-white text-base">240 GSM Combed Cotton</strong>
                         <p className="text-xs text-neutral-400 leading-relaxed">Structured silhouette that retains boxy drape without clinging.</p>
                       </div>
-                      <div className="p-4 bg-neutral-900 rounded-[18px] border border-white/10 space-y-1.5">
+                      <div className="p-4 bg-neutral-900 rounded-xl border border-white/10 space-y-1.5">
                         <span className="text-neutral-400 block text-[10px] uppercase font-bold tracking-wider">Print Method</span>
                         <strong className="text-white text-base">High-Density DTF</strong>
                         <p className="text-xs text-neutral-400 leading-relaxed">Multi-pass pigment matrix wash-tested for 40+ cycles without cracking.</p>
                       </div>
-                      <div className="p-4 bg-neutral-900 rounded-[18px] border border-white/10 space-y-1.5">
+                      <div className="p-4 bg-neutral-900 rounded-xl border border-white/10 space-y-1.5">
                         <span className="text-neutral-400 block text-[10px] uppercase font-bold tracking-wider">Collar Construction</span>
                         <strong className="text-white text-base">1-Inch Reinforced Rib</strong>
                         <p className="text-xs text-neutral-400 leading-relaxed">Double-stitched ribbed crewneck that stays tight and flat.</p>
@@ -619,13 +643,13 @@ export function App() {
                 )}
               </motion.div>
 
-              {/* Accordion 3: Founder Offer Stack & Guarantee (Slide Right) */}
+              {/* Accordion 3: Founder Offer Stack & Guarantee */}
               <motion.div 
-                initial={{ x: 50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="border border-white/10 rounded-[24px] overflow-hidden bg-neutral-950 shadow-md"
+                transition={{ duration: 0.35 }}
+                className="border border-white/10 rounded-xl overflow-hidden bg-neutral-950 shadow-md"
               >
                 <button
                   onClick={() => toggleDropdown("perks")}
@@ -649,13 +673,13 @@ export function App() {
                 )}
               </motion.div>
 
-              {/* Accordion 4: Production Tracker (Slide Left) */}
+              {/* Accordion 4: Production Tracker */}
               <motion.div 
-                initial={{ x: -50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="border border-white/10 rounded-[24px] overflow-hidden bg-neutral-950 shadow-md"
+                transition={{ duration: 0.35 }}
+                className="border border-white/10 rounded-xl overflow-hidden bg-neutral-950 shadow-md"
               >
                 <button
                   onClick={() => toggleDropdown("tracker")}
@@ -669,18 +693,18 @@ export function App() {
                 </button>
                 {activeDropdown === "tracker" && (
                   <div className="p-5 sm:p-7 border-t border-white/10 pt-4">
-                    <ProductionTracker currentReservedCount={31} />
+                    <ProductionTracker />
                   </div>
                 )}
               </motion.div>
 
-              {/* Accordion 5: Brand Manifesto & Founder Signature (Slide Right) */}
+              {/* Accordion 5: Brand Manifesto & Founder Signature */}
               <motion.div 
-                initial={{ x: 50, opacity: 0 }}
-                whileInView={{ x: 0, opacity: 1 }}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5 }}
-                className="border border-white/10 rounded-[24px] overflow-hidden bg-neutral-950 shadow-md"
+                transition={{ duration: 0.35 }}
+                className="border border-white/10 rounded-xl overflow-hidden bg-neutral-950 shadow-md"
               >
                 <button
                   onClick={() => toggleDropdown("manifesto")}
@@ -817,6 +841,10 @@ export function App() {
                     <span>Balance upon delivery:</span>
                     <span>{confirmedOrder.balanceDue.toLocaleString()} XAF</span>
                   </div>
+                  <div className="border-t border-white/10 pt-2 flex items-center justify-between text-[11px] text-neutral-300">
+                    <span className="text-neutral-400">Packaging Suite:</span>
+                    <span className="text-white font-medium text-right">Custom Nylon Bag + Vegeta Tag + Stickers + Thank You Card</span>
+                  </div>
                 </div>
 
                 {/* Mobile Money Deposit Instructions */}
@@ -842,6 +870,48 @@ export function App() {
                 {/* Delivery and Deposit Breakdown Phases */}
                 <DeliveryDepositPhases compact />
 
+                {/* VIP Referral Rewards Banner */}
+                <div className="p-4 bg-neutral-900/80 border border-white/15 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="space-y-0.5 text-center sm:text-left">
+                    <div className="font-display font-bold text-xs uppercase text-white flex items-center justify-center sm:justify-start gap-1.5">
+                      <Trophy size={14} className="text-white" />
+                      <span>Win a Free Piece from Drop 002 · Top 3 Referrers Contest</span>
+                    </div>
+                    <p className="text-[11px] font-mono text-neutral-400">
+                      Share your unique WhatsApp invite link. The Top 3 referrers on our leaderboard win a 100% Free Piece from Drop 002!
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setIsReferralModalOpen(true)}
+                    className="py-2.5 px-4 bg-white hover:bg-neutral-200 text-black font-display font-bold text-xs uppercase tracking-wider rounded-xl transition-all shrink-0 cursor-pointer shadow-md flex items-center gap-1.5"
+                  >
+                    <Trophy size={13} />
+                    <span>View Referral Pass & Rank</span>
+                  </button>
+                </div>
+
+                {/* WhatsApp Community Direct Funnel */}
+                <div className="p-4 bg-neutral-900/80 border border-white/15 rounded-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+                  <div className="space-y-0.5 text-center sm:text-left">
+                    <div className="font-display font-bold text-xs uppercase text-white flex items-center justify-center sm:justify-start gap-1.5">
+                      <MessageCircle size={14} className="text-white" />
+                      <span>Join The VIP WhatsApp Community</span>
+                    </div>
+                    <p className="text-[11px] font-mono text-neutral-300">
+                      Get direct drop alerts, vote on future anime stencil pieces, and chat directly with the founder.
+                    </p>
+                  </div>
+                  <a
+                    href="https://chat.whatsapp.com/D9cylrMF05SKAONofCRPij"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-4 bg-white hover:bg-neutral-200 text-black font-display font-bold text-xs uppercase tracking-wider rounded-xl transition-all shrink-0 cursor-pointer shadow-md flex items-center gap-1.5"
+                  >
+                    <MessageCircle size={13} />
+                    <span>Join WhatsApp Group</span>
+                  </a>
+                </div>
+
                 {/* WhatsApp Confirmation Link */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
                   <a
@@ -852,6 +922,7 @@ export function App() {
                     rel="noopener noreferrer"
                     className="flex-1 py-3.5 px-4 bg-white hover:bg-neutral-200 text-black font-display font-black text-xs uppercase tracking-wider rounded-xl flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg"
                   >
+                    <MessageCircle size={15} />
                     <span>Send WhatsApp Confirmation</span>
                     <ArrowRight size={14} />
                   </a>
@@ -1171,6 +1242,14 @@ export function App() {
       <PrivacyPolicyModal isOpen={isPrivacyOpen} onClose={() => setIsPrivacyOpen(false)} />
       <TermsModal isOpen={isTermsOpen} onClose={() => setIsTermsOpen(false)} />
       <CookieBanner onOpenPrivacy={() => setIsPrivacyOpen(true)} onOpenTerms={() => setIsTermsOpen(true)} />
+
+      {/* Referral Pass & Rewards Modal */}
+      <ReferralModal
+        isOpen={isReferralModalOpen}
+        onClose={() => setIsReferralModalOpen(false)}
+        customerPhone={customerPhone || visitorPhone}
+        customerName={customerName || visitorName}
+      />
     </div>
   );
 }

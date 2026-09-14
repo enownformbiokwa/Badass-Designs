@@ -7,6 +7,7 @@ import {
   RefreshCw, 
   Trash2, 
   CheckCircle2, 
+  Check,
   Copy, 
   Key, 
   ShieldCheck, 
@@ -56,6 +57,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
   const [isSyncingSheets, setIsSyncingSheets] = useState<boolean>(false);
   const [syncStatusMsg, setSyncStatusMsg] = useState<string>("");
   const [copiedScript, setCopiedScript] = useState<boolean>(false);
+  const [copiedAutoReply, setCopiedAutoReply] = useState<boolean>(false);
 
   // PIN Change state
   const [currentPin, setCurrentPin] = useState<string>("");
@@ -480,6 +482,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
     referrerPhone: string;
     referrerEmail: string;
     referredOrders: PreorderRecord[];
+    referredLeads: LeadRecord[];
     totalRevenue: number;
     totalDeposits: number;
     tier: number; // 0, 1, 2, 3
@@ -499,6 +502,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
           referrerPhone: o.phone || "",
           referrerEmail: o.email || "",
           referredOrders: [],
+          referredLeads: [],
           totalRevenue: 0,
           totalDeposits: 0,
           tier: 0,
@@ -519,6 +523,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
           referrerPhone: l.phone || "",
           referrerEmail: l.email || "",
           referredOrders: [],
+          referredLeads: [],
           totalRevenue: 0,
           totalDeposits: 0,
           tier: 0,
@@ -528,7 +533,29 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
     }
   });
 
-  // 3. Map orders with referredBy
+  // 3. Map leads with referredBy
+  leads.forEach((l) => {
+    if (l.referredBy) {
+      const c = l.referredBy.trim().toUpperCase();
+      if (!referralMap[c]) {
+        referralMap[c] = {
+          code: c,
+          referrerName: "Non-Buyer Promoter / Direct Link",
+          referrerPhone: "",
+          referrerEmail: "",
+          referredOrders: [],
+          referredLeads: [],
+          totalRevenue: 0,
+          totalDeposits: 0,
+          tier: 0,
+          tierReward: "No referrals yet",
+        };
+      }
+      referralMap[c].referredLeads.push(l);
+    }
+  });
+
+  // 4. Map orders with referredBy
   orders.forEach((o) => {
     if (o.referredBy) {
       const c = o.referredBy.trim().toUpperCase();
@@ -539,6 +566,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
           referrerPhone: "",
           referrerEmail: "",
           referredOrders: [],
+          referredLeads: [],
           totalRevenue: 0,
           totalDeposits: 0,
           tier: 0,
@@ -556,7 +584,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
     const count = r.referredOrders.length;
     if (count >= 3) {
       r.tier = 3;
-      r.tierReward = "Grand Prize: 100% Free T-Shirt (Drop 002)";
+      r.tierReward = "Grand Prize: 100% Free T-Shirt (Drop 001)";
     } else if (count === 2) {
       r.tier = 2;
       r.tierReward = "Tier 2: Limited Founder Snapback / Cap";
@@ -570,10 +598,11 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
   });
 
   const activeReferralsList = Object.values(referralMap)
-    .filter((r) => r.referredOrders.length > 0)
-    .sort((a, b) => b.referredOrders.length - a.referredOrders.length);
+    .filter((r) => r.referredOrders.length > 0 || r.referredLeads.length > 0)
+    .sort((a, b) => (b.referredOrders.length * 10 + b.referredLeads.length) - (a.referredOrders.length * 10 + a.referredLeads.length));
 
   const totalReferredOrdersCount = orders.filter((o) => Boolean(o.referredBy)).length;
+  const totalReferredLeadsCount = leads.filter((l) => Boolean(l.referredBy)).length;
   const totalReferredRevenue = activeReferralsList.reduce((sum, r) => sum + r.totalRevenue, 0);
   const tier3WinnersCount = activeReferralsList.filter((r) => r.tier >= 3).length;
 
@@ -965,6 +994,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                           <th className="p-3">Email</th>
                           <th className="p-3">WhatsApp / Phone</th>
                           <th className="p-3">Magnet Source</th>
+                          <th className="p-3">Referred By</th>
                           <th className="p-3 text-right">Action</th>
                         </tr>
                       </thead>
@@ -988,6 +1018,15 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                                 )}
                               </td>
                               <td className="p-3 text-neutral-400 text-[10px] whitespace-nowrap">{l.source}</td>
+                              <td className="p-3 whitespace-nowrap">
+                                {l.referredBy ? (
+                                  <span className="font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20 text-[10px]">
+                                    #{l.referredBy}
+                                  </span>
+                                ) : (
+                                  <span className="text-neutral-500 text-[10px]">Direct</span>
+                                )}
+                              </td>
                               <td className="p-3 text-right whitespace-nowrap">
                                 <button
                                   onClick={() => handleDeleteLead(l.leadId, `${l.name || "Subscriber"} (${l.email || l.phone || l.leadId})`)}
@@ -1039,11 +1078,21 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                 {/* Referral Overview Metric Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div className="bg-neutral-900/80 border border-white/10 rounded-xl p-3">
-                    <span className="text-[10px] uppercase text-neutral-400">Referred Orders</span>
+                    <span className="text-[10px] uppercase text-neutral-400">Referred Preorders</span>
                     <div className="text-xl font-bold text-amber-400 mt-1 flex items-baseline gap-1.5">
                       <span>{totalReferredOrdersCount}</span>
                       <span className="text-[10px] text-neutral-500 font-normal">
                         ({orders.length > 0 ? Math.round((totalReferredOrdersCount / orders.length) * 100) : 0}% of all drops)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="bg-neutral-900/80 border border-white/10 rounded-xl p-3">
+                    <span className="text-[10px] uppercase text-neutral-400">Referred Signups</span>
+                    <div className="text-xl font-bold text-sky-400 mt-1 flex items-baseline gap-1.5">
+                      <span>{totalReferredLeadsCount}</span>
+                      <span className="text-[10px] text-neutral-500 font-normal">
+                        ({leads.length > 0 ? Math.round((totalReferredLeadsCount / leads.length) * 100) : 0}% of leads)
                       </span>
                     </div>
                   </div>
@@ -1058,52 +1107,110 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                   <div className="bg-neutral-900/80 border border-white/10 rounded-xl p-3">
                     <span className="text-[10px] uppercase text-neutral-400">Active Promoters</span>
                     <div className="text-xl font-bold text-white mt-1">
-                      {activeReferralsList.length} <span className="text-[10px] text-neutral-500">founders</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-neutral-900/80 border border-white/10 rounded-xl p-3">
-                    <span className="text-[10px] uppercase text-neutral-400">Free Tee Winners (Tier 3)</span>
-                    <div className="text-xl font-bold text-sky-400 mt-1">
-                      {tier3WinnersCount} <span className="text-[10px] text-neutral-500">qualified</span>
+                      {activeReferralsList.length} <span className="text-[10px] text-neutral-500">promoters</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Reward Milestones Legend */}
-                <div className="p-4 bg-gradient-to-r from-neutral-900 via-neutral-900/90 to-amber-950/30 rounded-xl border border-amber-500/30 space-y-2">
-                  <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300 uppercase tracking-wider">
-                    <Trophy size={14} className="text-amber-400" />
-                    <span>Customer Reward Tier Milestones</span>
+                {/* Founder WhatsApp Referral Auto-Reply & Community Funnel Kit */}
+                <div className="p-4 bg-gradient-to-r from-emerald-950/40 via-neutral-900 to-neutral-900 rounded-xl border border-emerald-500/30 space-y-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <h5 className="font-display font-bold text-xs uppercase text-emerald-400 tracking-wider">
+                        WhatsApp Referral Reply & Community Funnel Tool
+                      </h5>
+                    </div>
+                    <span className="text-[10px] font-mono text-neutral-400">Founder Toolkit</span>
                   </div>
+
+                  <p className="text-xs text-neutral-300 leading-relaxed font-sans">
+                    When someone sends you: <em className="text-amber-300 font-mono">"Hello Badass Designs, [Name] ([Number]) sent me and I'd like to join the journey"</em>, copy and send this pre-built script to instantly funnel them into your <strong>WhatsApp Community</strong>, <strong>Instagram</strong>, and <strong>TikTok</strong>:
+                  </p>
+
+                  <div className="p-3 bg-black/70 border border-white/10 rounded-lg text-xs font-mono text-neutral-300 whitespace-pre-wrap leading-relaxed relative">
+{`Yo! Welcome to Badass Designs 🔥
+
+Your referral has been registered for the Drop 002 Free Piece competition! You've unlocked VIP priority access to our limited Drop 001 (Vegeta Stencil Tee — only 50 pieces).
+
+👉 1. Join our official VIP WhatsApp Community for secret drops & BTS:
+https://chat.whatsapp.com/D9cylrMF05SKAONofCRPij
+
+👉 2. Browse the colorways & reserve your size:
+https://badassdesigns.store
+
+👉 3. Follow behind-the-scenes on TikTok & IG:
+@badass_designs.cm
+
+What size do you wear? (S, M, L, XL, XXL)`}
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    <button
+                      onClick={() => {
+                        const script = `Yo! Welcome to Badass Designs 🔥\n\nYour referral has been registered for the Drop 002 Free Piece competition! You've unlocked VIP priority access to our limited Drop 001 (Vegeta Stencil Tee — only 50 pieces).\n\n👉 1. Join our official VIP WhatsApp Community for secret drops & BTS:\nhttps://chat.whatsapp.com/D9cylrMF05SKAONofCRPij\n\n👉 2. Browse the colorways & reserve your size:\nhttps://badassdesigns.store\n\n👉 3. Follow behind-the-scenes on TikTok & IG:\n@badass_designs.cm\n\nWhat size do you wear? (S, M, L, XL, XXL)`;
+                        navigator.clipboard.writeText(script);
+                        setCopiedAutoReply(true);
+                        setTimeout(() => setCopiedAutoReply(false), 2500);
+                      }}
+                      className="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold font-mono text-xs rounded-lg flex items-center gap-1.5 cursor-pointer shadow transition-all"
+                    >
+                      {copiedAutoReply ? <Check size={13} /> : <Copy size={13} />}
+                      <span>{copiedAutoReply ? "Script Copied!" : "Copy WhatsApp Reply Script"}</span>
+                    </button>
+
+                    <a
+                      href="https://web.whatsapp.com"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 text-neutral-200 font-mono text-xs rounded-lg flex items-center gap-1.5 transition-colors"
+                    >
+                      <MessageCircle size={13} className="text-emerald-400" />
+                      <span>Open WhatsApp Web</span>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Top 3 Free Piece Reward Podium Legend */}
+                <div className="p-4 bg-gradient-to-r from-neutral-900 via-neutral-900/90 to-amber-950/30 rounded-xl border border-amber-500/30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300 uppercase tracking-wider">
+                      <Trophy size={14} className="text-amber-400" />
+                      <span>Grand Competition: Top 3 Referrers Win a 100% Free Piece!</span>
+                    </div>
+                    <span className="text-[10px] font-mono text-amber-400 font-bold bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                      Drop 001 Allocation
+                    </span>
+                  </div>
+
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1 text-xs">
-                    <div className="p-2.5 bg-neutral-950/70 border border-white/10 rounded-lg flex items-center gap-2.5">
-                      <div className="w-6 h-6 rounded bg-amber-400/20 text-amber-300 font-bold flex items-center justify-center text-xs shrink-0">
-                        1
+                    <div className="p-2.5 bg-amber-950/40 border border-amber-400/40 rounded-lg flex items-center gap-2.5 shadow">
+                      <div className="w-7 h-7 rounded bg-amber-400 text-black font-black flex items-center justify-center text-xs shrink-0 shadow">
+                        🥇 1
                       </div>
                       <div>
-                        <div className="font-bold text-white text-[11px]">1 Friend Invited</div>
-                        <div className="text-[10px] text-neutral-400">Badass Die-Cut Vinyl Sticker Pack</div>
+                        <div className="font-bold text-amber-300 text-[11px]">Rank #1: Free Piece (1st Pick from Drop 002)</div>
+                        <div className="text-[10px] text-neutral-300">100% Free Drop 002 Piece + Serial #001 & Custom Packaging Suite</div>
                       </div>
                     </div>
 
-                    <div className="p-2.5 bg-neutral-950/70 border border-white/10 rounded-lg flex items-center gap-2.5">
-                      <div className="w-6 h-6 rounded bg-amber-400/20 text-amber-300 font-bold flex items-center justify-center text-xs shrink-0">
-                        2
+                    <div className="p-2.5 bg-neutral-950/70 border border-neutral-600 rounded-lg flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded bg-neutral-700 text-white font-black flex items-center justify-center text-xs shrink-0">
+                        🥈 2
                       </div>
                       <div>
-                        <div className="font-bold text-white text-[11px]">2 Friends Invited</div>
-                        <div className="text-[10px] text-neutral-400">Limited Founder Snapback / Cap</div>
+                        <div className="font-bold text-neutral-200 text-[11px]">Rank #2: Free Piece (Drop 002)</div>
+                        <div className="text-[10px] text-neutral-400">100% Free Drop 002 Piece (Any Size & Color)</div>
                       </div>
                     </div>
 
-                    <div className="p-2.5 bg-neutral-950/70 border border-emerald-500/30 rounded-lg flex items-center gap-2.5">
-                      <div className="w-6 h-6 rounded bg-emerald-500/20 text-emerald-300 font-bold flex items-center justify-center text-xs shrink-0">
-                        3+
+                    <div className="p-2.5 bg-neutral-950/70 border border-amber-800/40 rounded-lg flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded bg-amber-900/60 text-amber-400 font-black flex items-center justify-center text-xs shrink-0">
+                        🥉 3
                       </div>
                       <div>
-                        <div className="font-bold text-emerald-300 text-[11px]">3+ Friends Invited</div>
-                        <div className="text-[10px] text-neutral-300">100% Free T-Shirt on Drop 002!</div>
+                        <div className="font-bold text-amber-400 text-[11px]">Rank #3: Free Piece (Drop 002)</div>
+                        <div className="text-[10px] text-neutral-400">100% Free Drop 002 Piece (Any Size & Color)</div>
                       </div>
                     </div>
                   </div>
@@ -1125,9 +1232,10 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                         <thead className="bg-neutral-900 text-neutral-400 uppercase text-[10px] sticky top-0 z-10">
                           <tr>
                             <th className="p-3">Rank</th>
-                            <th className="p-3">Promoter / Founder</th>
+                            <th className="p-3">Promoter</th>
                             <th className="p-3">Invite Code</th>
-                            <th className="p-3">Preorders Driven</th>
+                            <th className="p-3">Signups</th>
+                            <th className="p-3">Preorders</th>
                             <th className="p-3">Gross Value</th>
                             <th className="p-3">Reward Milestone</th>
                             <th className="p-3 text-right">Reward Outreach</th>
@@ -1137,7 +1245,8 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                           {activeReferralsList.map((ref, idx) => {
                             const isExpanded = expandedReferrer === ref.code;
                             const cleanPhone = (ref.referrerPhone || "").replace(/\D/g, "");
-                            const rewardMsg = `Hello ${ref.referrerName}! Badass Designs here. Fantastic news: ${ref.referredOrders.length} of your friends preordered from Drop 001 using your invite code [${ref.code}]! You have officially unlocked your ${ref.tierReward}. We will be fulfilling this with your order. Thank you for championing the brand!`;
+                            const isTop3 = idx < 3 && (ref.referredOrders.length > 0 || ref.referredLeads.length > 0);
+                            const rewardMsg = `Hello ${ref.referrerName}! Badass Designs here. You are currently Ranked #${idx + 1} on our Leaderboard with ${ref.referredOrders.length} preorders and ${ref.referredLeads.length} signups! ${isTop3 ? "You are officially in the TOP 3 to claim a 100% FREE PIECE from Drop 002! 🏆" : "Keep sharing your invite link to break into the Top 3 and claim a 100% free piece from Drop 002!"} Thank you for championing the brand!`;
                             const waRewardLink = cleanPhone
                               ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(rewardMsg)}`
                               : null;
@@ -1155,7 +1264,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                                         🥈 #2
                                       </span>
                                     ) : idx === 2 ? (
-                                      <span className="inline-flex items-center gap-1 text-amber-600 font-black">
+                                      <span className="inline-flex items-center gap-1 text-amber-500 font-black">
                                         🥉 #3
                                       </span>
                                     ) : (
@@ -1172,6 +1281,11 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                                     </span>
                                   </td>
                                   <td className="p-3 whitespace-nowrap">
+                                    <span className="inline-flex items-center gap-1 font-mono text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded-full border border-sky-500/30">
+                                      {ref.referredLeads.length} {ref.referredLeads.length === 1 ? "signup" : "signups"}
+                                    </span>
+                                  </td>
+                                  <td className="p-3 whitespace-nowrap">
                                     <span className="inline-flex items-center gap-1 font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/30">
                                       {ref.referredOrders.length} {ref.referredOrders.length === 1 ? "preorder" : "preorders"}
                                     </span>
@@ -1180,23 +1294,17 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                                     {ref.totalRevenue.toLocaleString()} FCFA
                                   </td>
                                   <td className="p-3 whitespace-nowrap">
-                                    {ref.tier === 3 ? (
-                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse">
+                                    {isTop3 ? (
+                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-400/20 text-amber-300 border border-amber-400/50 animate-pulse">
                                         <Trophy size={11} />
-                                        <span>Tier 3 (Free T-Shirt)</span>
+                                        <span>Rank #{idx + 1} Winner (Free Piece)</span>
                                       </span>
-                                    ) : ref.tier === 2 ? (
-                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40">
-                                        <Gift size={11} />
-                                        <span>Tier 2 (Snapback Cap)</span>
-                                      </span>
-                                    ) : ref.tier === 1 ? (
-                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/40">
-                                        <Gift size={11} />
-                                        <span>Tier 1 (Sticker Pack)</span>
+                                    ) : (ref.referredOrders.length > 0 || ref.referredLeads.length > 0) ? (
+                                      <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-neutral-800 text-neutral-300 border border-white/10">
+                                        <span>Rank #{idx + 1} Contender</span>
                                       </span>
                                     ) : (
-                                      <span className="text-neutral-500 text-[10px]">No Reward Yet</span>
+                                      <span className="text-neutral-500 text-[10px]">No referrals yet</span>
                                     )}
                                   </td>
                                   <td className="p-3 text-right whitespace-nowrap space-x-2">
@@ -1205,7 +1313,7 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                                       onClick={() => setExpandedReferrer(isExpanded ? null : ref.code)}
                                       className="px-2.5 py-1 bg-neutral-900 hover:bg-neutral-800 text-neutral-300 border border-neutral-700 rounded text-[10px] cursor-pointer inline-flex items-center gap-1"
                                     >
-                                      <span>{isExpanded ? "Hide Friends" : "View Friends"}</span>
+                                      <span>{isExpanded ? "Hide Details" : "View Details"}</span>
                                       {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                                     </button>
 
@@ -1224,34 +1332,65 @@ export function OwnerPortalModal({ isOpen, onClose, ordersCount = 0 }: OwnerPort
                                   </td>
                                 </tr>
 
-                                {/* Expanded breakdown of referred orders */}
+                                {/* Expanded breakdown of referred orders and leads */}
                                 {isExpanded && (
                                   <tr className="bg-black/50">
-                                    <td colSpan={7} className="p-3.5 border-t border-b border-amber-500/20">
-                                      <div className="space-y-2">
-                                        <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5">
-                                          <Users size={13} />
-                                          <span>Friends Referred by {ref.referrerName} ({ref.code}):</span>
-                                        </div>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
-                                          {ref.referredOrders.map((cust) => (
-                                            <div
-                                              key={cust.orderId}
-                                              className="p-2.5 bg-neutral-900 rounded-lg border border-white/10 space-y-1 text-[11px]"
-                                            >
-                                              <div className="flex justify-between items-center">
-                                                <span className="font-bold text-white">{cust.name}</span>
-                                                <span className="text-[10px] text-amber-400 font-mono">#{cust.orderId}</span>
-                                              </div>
-                                              <div className="text-neutral-400 text-[10px]">
-                                                {cust.phone} • {cust.location}
-                                              </div>
-                                              <div className="flex justify-between text-[10px] text-neutral-300 pt-0.5">
-                                                <span>Size {cust.size} ({cust.color})</span>
-                                                <span className="text-emerald-400 font-bold">{cust.totalAmount.toLocaleString()} FCFA</span>
-                                              </div>
+                                    <td colSpan={8} className="p-3.5 border-t border-b border-amber-500/20">
+                                      <div className="space-y-3">
+                                        {/* Preorders */}
+                                        <div>
+                                          <div className="text-[11px] font-bold text-amber-300 flex items-center gap-1.5 mb-1.5">
+                                            <Users size={13} />
+                                            <span>Preorders Driven ({ref.referredOrders.length}):</span>
+                                          </div>
+                                          {ref.referredOrders.length === 0 ? (
+                                            <p className="text-[10px] text-neutral-500 italic">No preorders converted yet.</p>
+                                          ) : (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                              {ref.referredOrders.map((cust) => (
+                                                <div
+                                                  key={cust.orderId}
+                                                  className="p-2.5 bg-neutral-900 rounded-lg border border-white/10 space-y-1 text-[11px]"
+                                                >
+                                                  <div className="flex justify-between items-center">
+                                                    <span className="font-bold text-white">{cust.name}</span>
+                                                    <span className="text-[10px] text-amber-400 font-mono">#{cust.orderId}</span>
+                                                  </div>
+                                                  <div className="text-neutral-400 text-[10px]">
+                                                    {cust.phone} • {cust.location}
+                                                  </div>
+                                                  <div className="flex justify-between text-[10px] text-neutral-300 pt-0.5">
+                                                    <span>Size {cust.size} ({cust.color})</span>
+                                                    <span className="text-emerald-400 font-bold">{cust.totalAmount.toLocaleString()} FCFA</span>
+                                                  </div>
+                                                </div>
+                                              ))}
                                             </div>
-                                          ))}
+                                          )}
+                                        </div>
+
+                                        {/* Leads */}
+                                        <div>
+                                          <div className="text-[11px] font-bold text-sky-300 flex items-center gap-1.5 mb-1.5">
+                                            <Sparkles size={13} />
+                                            <span>Signups & Leads Driven ({ref.referredLeads.length}):</span>
+                                          </div>
+                                          {ref.referredLeads.length === 0 ? (
+                                            <p className="text-[10px] text-neutral-500 italic">No signups yet.</p>
+                                          ) : (
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                                              {ref.referredLeads.map((lead) => (
+                                                <div
+                                                  key={lead.leadId}
+                                                  className="p-2 bg-neutral-900/80 rounded-lg border border-white/5 text-[10px] space-y-0.5"
+                                                >
+                                                  <div className="font-semibold text-white">{lead.name || "VIP Subscriber"}</div>
+                                                  <div className="text-neutral-400">{lead.phone || lead.email || "Direct"}</div>
+                                                  <div className="text-neutral-500 text-[9px]">{lead.source}</div>
+                                                </div>
+                                              ))}
+                                            </div>
+                                          )}
                                         </div>
                                       </div>
                                     </td>

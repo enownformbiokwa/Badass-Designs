@@ -38,7 +38,10 @@ export function DropSystemExplainer() {
               <span>✦</span> The physical piece
             </li>
             <li className="flex items-center gap-1.5 text-white">
-              <span>✦</span> Drop-exclusive packaging
+              <span>✦</span> Custom nylon bag packaging
+            </li>
+            <li className="flex items-center gap-1.5 text-white">
+              <span>✦</span> Vegeta hang tag + Stickers + Thank You card
             </li>
             <li className="flex items-center gap-1.5 text-white">
               <span>✦</span> Founder Gift Draw entry

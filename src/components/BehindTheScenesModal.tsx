@@ -33,9 +33,9 @@ export function BehindTheScenesModal({ isOpen, onClose }: BehindTheScenesModalPr
       tag: "50+ Wash Tested"
     },
     {
-      stage: "PHASE 04 · PACKAGING & SERIALS",
-      title: "Matte-Black Collector Box & Card",
-      desc: "Packaged in rigid collector box with serialized metal-finish founder membership card.",
+      stage: "PHASE 04 · PACKAGING & UNBOXING",
+      title: "Custom Nylon Bag & Vegeta Lore Tag",
+      desc: "Packaged in custom branded nylon bag with sealed closure, Vegeta-themed lore hang tag, collector stickers, and signed founder Thank You card.",
       badge: "IN PRODUCTION",
       tag: "Limited to 50"
     }
